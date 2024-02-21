@@ -1,31 +1,30 @@
 const express = require("express");
 const router = new express.Router();
-const Client = require("../models/clients");
+const Supplier = require("../models/suppliers");
 const MainChartAccount = require("../models/mainChartAccount");
 const ChartAccount = require("../models/chartAccounts");
 
-// add client
-router.post("/addClient", async (req, res) => {
+// add supplier
+router.post("/addSupplier", async (req, res) => {
   const name = req.body.name;
   const phone = req.body.phone;
   const address = req.body.address;
-  const amountDebit = req.body.amountDebit;
 
   try {
-    if (!name || !phone || !address || !amountDebit) {
+    if (!name || !phone || !address) {
       throw new Error("miss_data");
     }
 
-    const client = new Client({ name, phone, address, amountDebit });
-    await client.save();
+    const supplier = new Supplier({ name, phone, address });
+    await supplier.save();
     let mainChartAccount = await MainChartAccount.findOne({
-      accountName: "Customers",
+      accountName: "Suppliers",
     });
-    let accountName = "ع-" + client.clientID;
+    let accountName = "م-" + supplier.supplierID;
     if (mainChartAccount) {
       const chartAccount = new ChartAccount({
         accountName,
-        accountRefId: client._id,
+        accountRefId: supplier._id,
         balance: 0,
         amountDebit: 0,
         amountCredit: 0,
@@ -34,11 +33,11 @@ router.post("/addClient", async (req, res) => {
       });
       await chartAccount.save();
     } else {
-      mainChartAccount = new MainChartAccount({ accountName: "Customers" });
+      mainChartAccount = new MainChartAccount({ accountName: "Suppliers" });
       await mainChartAccount.save();
       const chartAccount = new ChartAccount({
         accountName,
-        accountRefId: client._id,
+        accountRefId: supplier._id,
         balance: 0,
         amountDebit: 0,
         amountCredit: 0,
@@ -47,56 +46,56 @@ router.post("/addClient", async (req, res) => {
       });
       await chartAccount.save();
     }
-    res.status(200).send({ client });
+    res.status(200).send({ supplier });
   } catch (e) {
     console.log(e.message);
     if (e.message === "miss_data") {
       res.status(400).send({ message: "there are messing data" });
     } else if (e.code === 11000) {
-      res.status(400).send({ message: "this client name already exist" });
+      res.status(400).send({ message: "this supplier name already exist" });
     } else {
       res.status(400).send({ message: "an error has occurred" });
     }
   }
 });
 
-// get all clients
-router.get("/clients", async (req, res) => {
+// get all suppliers
+router.get("/suppliers", async (req, res) => {
   try {
-    const client = await Client.find({}).sort({ name: 1 });
-    res.status(200).send({ client });
+    const suppliers = await Supplier.find({}).sort({ name: 1 });
+    res.status(200).send({ suppliers });
   } catch (e) {
     res.status(400).send({ message: "an error has occurred" });
   }
 });
 
-// get client
-router.get("/client/:id", async (req, res) => {
-  const clientID = req.params.id;
+// get supplier
+router.get("/supplier/:id", async (req, res) => {
+  const supplierID = req.params.id;
 
   try {
-    const client = await Client.findById(clientID);
+    const supplier = await Supplier.findById(supplierID);
 
-    if (!client) {
-      throw new Error("no_client");
+    if (!supplier) {
+      throw new Error("no_supplier");
     }
 
-    res.status(200).send({ client });
+    res.status(200).send({ supplier });
   } catch (e) {
-    if (e.message === "no_client") {
-      res.status(400).send({ message: "no client with this ID" });
+    if (e.message === "no_supplier") {
+      res.status(400).send({ message: "no supplier with this ID" });
     } else {
       res.status(400).send({ message: "an error has occurred" });
     }
   }
 });
 
-router.get("/clientAccount/:id", async (req, res) => {
-  const clientID = req.params.id;
+router.get("/supplierAccount/:id", async (req, res) => {
+  const supplierID = req.params.id;
 
   try {
     const chartAccount = await ChartAccount.findOne({
-      accountRefId: clientID
+      accountRefId: supplierID
     });
 
     if (!chartAccount) {
@@ -106,17 +105,16 @@ router.get("/clientAccount/:id", async (req, res) => {
     res.status(200).send({ chartAccount });
   } catch (e) {
     if (e.message === "no_client") {
-      res.status(400).send({ message: "لا يوجد حساب لهذا العميل" });
+      res.status(400).send({ message: "لا يوجد حساب لهذا المورد" });
     } else {
       res.status(400).send({ message: "an error has occurred" });
     }
   }
 });
 
-
-// edit client
-router.put("/client/:id", async (req, res) => {
-  const clientID = req.params.id;
+// edit supplier
+router.put("/supplier/:id", async (req, res) => {
+  const supplierID = req.params.id;
 
   const updates = Object.keys(req.body);
   const allowedUpdates = ["name", "phone", "address"];
@@ -129,24 +127,24 @@ router.put("/client/:id", async (req, res) => {
       throw new Error("invalid_updates");
     }
 
-    const client = await Client.findById(clientID);
+    const supplier = await Supplier.findById(supplierID);
 
-    if (!client) {
-      throw new Error("no_client");
+    if (!supplier) {
+      throw new Error("no_supplier");
     }
 
     updates.forEach((update) => {
-      client[update] = req.body[update];
+      supplier[update] = req.body[update];
     });
 
-    await client.save();
+    await supplier.save();
 
-    res.status(200).send({ client });
+    res.status(200).send({ supplier });
   } catch (e) {
     if (e.code === 11000) {
-      res.status(400).send({ message: "this client name already exist" });
-    } else if (e.message === "no_client") {
-      res.status(400).send({ message: "no client with this ID" });
+      res.status(400).send({ message: "this supplier name already exist" });
+    } else if (e.message === "no_supplier") {
+      res.status(400).send({ message: "no supplier with this ID" });
     } else if (e.message === "invalid_updates") {
       return res.status(400).send({ message: "Invalid updates" });
     } else {
@@ -155,29 +153,29 @@ router.put("/client/:id", async (req, res) => {
   }
 });
 
-// delete client
-router.delete("/client/:id/", async (req, res) => {
-  const clientID = req.params.id;
+// delete supplier
+router.delete("/supplier/:id", async (req, res) => {
+  const supplierID = req.params.id;
 
   try {
-    await Client.findByIdAndDelete(clientID);
-    const client = await Client.find({}).sort({ name: 1 });
-    res.status(200).send({ client });
+    await Supplier.findByIdAndDelete(supplierID);
+    const supplier = await Supplier.find({}).sort({ name: 1 });
+    res.status(200).send({ supplier });
   } catch (e) {
     res.status(400).send({ message: "an error has occurred" });
   }
 });
 
-// delete clients
-router.delete("/clients", async (req, res) => {
-  const clientsToDelete = req.body.Customers;
-  console.log(clientsToDelete)
+// delete suppliers
+router.delete("/suppliers", async (req, res) => {
+  const suppliersToDelete = req.body.suppliers;
+
   try {
-    for (let client of clientsToDelete) {
-      await Client.findByIdAndDelete(client._id);
+    for (let supplier of suppliersToDelete) {
+      await Supplier.findByIdAndDelete(supplier._id);
     }
-    const clients = await Client.find({}).sort({ name: 1 });
-    res.status(200).send({ clients });
+    const suppliers = await Supplier.find({}).sort({ name: 1 });
+    res.status(200).send({ suppliers });
   } catch (e) {
     console.log(e);
     res.status(400).send({ message: "an error has occurred" });

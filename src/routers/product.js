@@ -5,16 +5,15 @@ const Product = require("../models/products");
 // add product
 router.post("/addProduct", async (req, res) => {
   const name = req.body.name;
-  const priceAfter = req.body.priceAfter;
-  const priceBefore = req.body.priceBefore;
-  const amount = req.body.amount;
+  const cost = req.body.cost;
+  const price = req.body.price;
   
   try {
-    if (!name || !priceAfter || !priceBefore || !amount) {
+    if (!name || !cost || !price ) {
       throw new Error("miss_data");
     }
   
-    const product = new Product({ name, priceAfter, priceBefore, amount});
+    const product = new Product({ name, cost, price, online: false});
 
     await product.save();
     res.status(200).send({ product });
@@ -46,7 +45,7 @@ router.get("/product/:id", async (req, res) => {
   const productID = req.params.id;
 
   try {
-    const product = await Product.findById(productID);
+    const product = await Product.findOne({productID});
 
     if (!product) {
       throw new Error("no_product");
@@ -55,20 +54,20 @@ router.get("/product/:id", async (req, res) => {
     res.status(200).send({ product });
   } catch (e) {
     if (e.message === "no_product") {
-      res.status(400).send({ message: "no product with this ID" });
+      res.status(400).send({ message: "لا يوجد منتج بهذا الكود" });
     } else {
-      res.status(400).send({ message: "an error has occurred" });
+      res.status(400).send({ message: "حدث خطأ ما" });
     }
   }
 });
 
 
 // edit product
-router.put("/product/:id/edit", async (req, res) => {
+router.put("/product/:id", async (req, res) => {
   const productID = req.params.id;
 
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "priceBefore", "priceAfter", "amount"];
+  const allowedUpdates = ["name", "cost", "price", "online"];
   const isValidUpdates = updates.every((update) =>
     allowedUpdates.includes(update)
   );
@@ -78,7 +77,9 @@ router.put("/product/:id/edit", async (req, res) => {
       throw new Error("invalid_updates");
     }
 
-    const product = await Product.findById(productID);
+    const product = await Product.findOne({
+      productID
+    });
 
     if (!product) {
       throw new Error("no_product");
@@ -88,6 +89,9 @@ router.put("/product/:id/edit", async (req, res) => {
       product[update] = req.body[update];
     });
 
+    if(req.body.cost && req.body.cost){
+      product.lastEdit = new Date()
+    }
     await product.save();
 
     res.status(200).send({ product });
@@ -104,15 +108,37 @@ router.put("/product/:id/edit", async (req, res) => {
   }
 });
 
+// edit all products price
+router.put("/products/price", async (req, res) => {
+
+  const increaseAmount = req.body.increaseAmount;
+  const editAt = new Date();
+  try {
+    const products = await Product.find({});
+
+    for(let product of products){
+      product.price = product.price + ((product.price * increaseAmount) / 100)  
+      product.lastEdit = editAt;
+      await product.save();
+    }
+    res.status(200).send({ products });
+  } catch (e) {
+    console.log(e)
+    res.status(400).send({ message: "an error has occurred" });
+  }
+});
+
 
 // delete product
-router.delete('/product/:id/delete', async (req, res) => {
+router.delete('/product/:id', async (req, res) => {
   const productID = req.params.id;
 
   try {
-      await Product.findByIdAndDelete(productID);
-      const products = await Product.find({}).sort({'name': 1});
-      res.status(200).send({products})
+      const product = await Product.findOneAndDelete({
+        productID
+      });
+      // const products = await Product.find({}).sort({'name': 1});
+      res.status(200).send({product})
   } catch (e) {
       res.status(400).send({ message: "an error has occurred" });
   }

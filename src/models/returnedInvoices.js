@@ -1,13 +1,18 @@
 const mongoose = require("mongoose");
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-const orderSchema = new mongoose.Schema(
+const returnedInvoicesSchema = new mongoose.Schema(
   {
     clientID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Client",
       required: true,
     },
-
+    clientName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     orderData: [{
       productID: {
         type: mongoose.Schema.Types.ObjectId,
@@ -18,11 +23,11 @@ const orderSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
-      priceBefore:{
+      price:{
         type: Number,
         required: true,
       },
-      priceAfter: {
+      cost: {
         type: Number,
         required: true,
       },
@@ -43,11 +48,22 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    // الفلوس هتتحخصم من المتبقي علي العميل او كاش من المحل
+    // remaining or store
+    monyBackType: {
+      type: String,
+      required: true,
+    },
+    returnedInvoicesID: {
+      type: Number,
+      unique: true
+    }
   },
   {
     timestamps: true,
   }
 );
 
-const Order = mongoose.model("Order", orderSchema);
-module.exports = Order;
+returnedInvoicesSchema.plugin(AutoIncrement,  {inc_field: 'returnedInvoicesID'} );
+const ReturnedInvoices = mongoose.model("ReturnedInvoices", returnedInvoicesSchema);
+module.exports = ReturnedInvoices;

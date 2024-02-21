@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-const clientSchema = new mongoose.Schema({
+const supplierSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     unique: true,
-    trim: true,
   },
   phone: {
     type: String,
@@ -16,17 +15,13 @@ const clientSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  amountDebit: {
-    type: Number,
-    required: true,
-  },
-  clientID: {
+  supplierID: {
     type: Number,
     unique: true
   }
-
 });
 
-clientSchema.plugin(AutoIncrement,  {inc_field: 'clientID'} );
-const Client = mongoose.model("Client", clientSchema);
-module.exports = Client;
+supplierSchema.plugin(AutoIncrement,  {inc_field: 'supplierID'} );
+
+const Supplier = mongoose.model("Supplier", supplierSchema);
+module.exports = Supplier;
