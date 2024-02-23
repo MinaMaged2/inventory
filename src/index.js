@@ -18,6 +18,7 @@ const invoiceHeaderRouter = require('./routers/invoiceHeader');
 const purchaseHeaderRouter = require('./routers/purchaseHeader');
 const dailyJournalRouter = require('./routers/dailyJournal');
 const productPerStoreRouter = require('./routers/productPerStore');
+const chartAccountsRouter = require('./routers/chartAccounts');
 
 // connected port
 const port = process.env.PORT;
@@ -38,6 +39,7 @@ app.use(invoiceHeaderRouter);
 app.use(purchaseHeaderRouter);
 app.use(dailyJournalRouter);
 app.use(productPerStoreRouter);
+app.use(chartAccountsRouter);
 
 app.listen(port, ()=> {
   console.log("server is running " + port)
