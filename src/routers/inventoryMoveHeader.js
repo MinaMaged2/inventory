@@ -40,6 +40,7 @@ router.post("/addInventoryMoveHeader", async (req, res) => {
         'quantityAfter': (productPerStoreData.quantity + product.change),
         'description': product.description,
         'storeID': product.storeID,
+        'amountOfReturn': 0,
         'product': product.product,
         'inventoryHeaderID': inventoryMoveHeader._id,
       });
@@ -88,7 +89,6 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
     let newProducts = [];
     if(products){
       for (let product of products) {
-        console.log(product)
         let productInStore = await Product.findOne({ name: product.Name.trim() });
         if (productInStore) {
           let productPerStore = await ProductPerStore.findOne({
@@ -97,8 +97,6 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
           });
   
           if(productPerStore){
-            console.log( product.Quantity)
-            console.log( "asdassss" + productPerStore.quantity)
             productPerStore.quantity = product.Quantity;
             productInStore.cost = product.Cost;
             productInStore.price = product.Price
@@ -151,6 +149,7 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
         'quantityAfter': (product.quantity),
         'description': description,
         'storeID': storeID,
+        'amountOfReturn': 0,
         'product': product._id,
         'inventoryHeaderID': inventoryMoveHeader._id,
       });
@@ -218,6 +217,7 @@ router.post("/InventoryMoveHeaderStores", async (req, res) => {
         'quantityAfter': (productPerStoreData.quantity + product.change),
         'description': product.description,
         'storeID': product.storeID,
+        'amountOfReturn': 0,
         'product': product.product,
         'inventoryHeaderID': inventoryMoveHeader._id,
       });

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = new express.Router();
 const InvoiceHeader = require("../models/invoiceHeader");
+const StockMovement = require("../models/stockMovement");
 
 router.post("/addInvoiceHeader", async (req, res) => {
   const type = req.body.type;
@@ -13,14 +14,12 @@ router.post("/addInvoiceHeader", async (req, res) => {
   const clientID = req.body.clientID;
   const discount = req.body.discount;
   const profit = req.body.profit;
-  const isPayment = req.body.isPayment
+  const isPayment = req.body.isPayment;
+  const isReturn = req.body.isReturn;
+
   try {
     console.log(req.body);
-    if (
-      !invoiceTotalWithTax ||
-      !invoiceTotalNoTax ||
-      !clientID 
-    ) {
+    if (!invoiceTotalWithTax || !invoiceTotalNoTax || !clientID) {
       throw new Error("miss_data");
     }
 
@@ -34,7 +33,8 @@ router.post("/addInvoiceHeader", async (req, res) => {
       clientID,
       storeID,
       profit,
-      isPayment
+      isPayment,
+      isReturn: isReturn? isReturn : false
     });
 
     await invoiceHeader.save();
@@ -55,61 +55,68 @@ router.get("/InvoiceHeaders", async (req, res) => {
   const startFrom = req.query.startFrom;
   const endTo = req.query.endTo;
   try {
-    if(invoiceType == "null"){
+    if (invoiceType == "null") {
       const invoiceHeaders = await InvoiceHeader.find({
         createdAt: { $gte: startFrom, $lte: endTo },
-      }).populate('clientID').populate('storeID').sort({ createdAt: 'desc'});
+      })
+        .populate("clientID")
+        .populate("storeID")
+        .sort({ createdAt: "desc" });
       res.status(200).send({ invoiceHeaders });
-    }else{
+    } else {
       const invoiceHeaders = await InvoiceHeader.find({
         paidYN: invoiceType,
         createdAt: { $gte: startFrom, $lte: endTo },
-      }).populate('clientID').populate('storeID').sort({ createdAt: 'desc'});
+      })
+        .populate("clientID")
+        .populate("storeID")
+        .sort({ createdAt: "desc" });
       res.status(200).send({ invoiceHeaders });
     }
-    
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(400).send({ message: "an error has occurred" });
   }
 });
 
 // get all Invoices
 router.get("/InvoiceHeaders/:id", async (req, res) => {
-  const clientID = req.params.id
+  const clientID = req.params.id;
   const invoiceType = req.query.invoiceType;
   const startFrom = req.query.startFrom;
   const endTo = req.query.endTo;
   try {
-    if(invoiceType === "null"){
+    if (invoiceType === "null") {
       const invoiceHeaders = await InvoiceHeader.find({
         clientID: clientID,
         createdAt: { $gte: startFrom, $lte: endTo },
-      }).populate('clientID').populate('storeID');
+      })
+        .populate("clientID")
+        .populate("storeID");
       res.status(200).send({ invoiceHeaders });
-    }else{
-      let typeOfPay = invoiceType === 'true'? true : false ;
+    } else {
+      let typeOfPay = invoiceType === "true" ? true : false;
       const invoiceHeaders = await InvoiceHeader.find({
         clientID: clientID,
         paidYN: typeOfPay,
         createdAt: { $gte: startFrom, $lte: endTo },
-      }).populate('clientID').populate('storeID');
+      })
+        .populate("clientID")
+        .populate("storeID");
       res.status(200).send({ invoiceHeaders });
     }
-    
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(400).send({ message: "an error has occurred" });
   }
 });
-
 
 // edit invoice payment
 router.put("/invoice/:id", async (req, res) => {
   const invoiceID = req.params.id;
 
-  console.log(req.body)
-  console.log(typeof(req.body.paidYN))
+  console.log(req.body);
+  console.log(typeof req.body.paidYN);
   const updates = Object.keys(req.body);
   const allowedUpdates = ["paidYN", "amountPaid"];
   const isValidUpdates = updates.every((update) =>
@@ -135,6 +142,60 @@ router.put("/invoice/:id", async (req, res) => {
 
     res.status(200).send({ invoice });
   } catch (e) {
+    if (e.message === "no_invoice") {
+      res.status(400).send({ message: "no client with this ID" });
+    } else if (e.message === "invalid_updates") {
+      return res.status(400).send({ message: "Invalid updates" });
+    } else {
+      res.status(400).send({ message: "an error has occurred" });
+    }
+  }
+});
+
+// edit invoice for return
+router.put("/returnInvoice/:id", async (req, res) => {
+  const invoiceID = req.params.id;
+
+  console.log(req.body);
+  const products = req.body.products;
+
+  const updates = Object.keys(req.body.invoiceUpdates);
+  const allowedUpdates = [
+    "invoiceTotalWithTax",
+    "invoiceTotalNoTax",
+    "amountPaid",
+    "profit",
+  ];
+  const isValidUpdates = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+
+  try {
+    if (!isValidUpdates) {
+      throw new Error("invalid_updates");
+    }
+
+    const invoice = await InvoiceHeader.findById(invoiceID);
+
+    if (!invoice) {
+      throw new Error("no_invoice");
+    }
+
+    updates.forEach((update) => {
+      invoice[update] = req.body.invoiceUpdates[update];
+    });
+
+    for (let product of products) {
+      let stockMovement = await StockMovement.findById(product.stockMovementID);
+      stockMovement.amountOfReturn = product.returnAmount;
+      await stockMovement.save();
+    }
+
+    await invoice.save();
+
+    res.status(200).send({ invoice });
+  } catch (e) {
+    console.log(e)
     if (e.message === "no_invoice") {
       res.status(400).send({ message: "no client with this ID" });
     } else if (e.message === "invalid_updates") {

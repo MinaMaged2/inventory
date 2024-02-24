@@ -20,6 +20,9 @@ const stockMovementSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    amountOfReturn:{
+      type: Number,
+    },
     description: {
       type: String,
       required: true,

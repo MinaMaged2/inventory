@@ -46,6 +46,9 @@ const invoiceHeaderSchema = new mongoose.Schema(
     isPayment:{
       type: Boolean,
     },
+    isReturn:{
+      type: Boolean,
+    },
     invoiceHeaderID: {
       type: Number,
       unique: true,
