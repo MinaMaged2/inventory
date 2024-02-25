@@ -37,6 +37,11 @@ router.post("/addStore", async (req, res) => {
           amountDebit: 0,
           amountCredit: 0,
         },
+        dailyExpenses:{
+          balance: 0,
+          amountDebit: 0,
+          amountCredit: 0,
+        },
         parentChartAccountID: mainChartAccount._id,
       });
       await chartAccount.save();

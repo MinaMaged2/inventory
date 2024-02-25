@@ -19,7 +19,7 @@ router.post("/addInvoiceHeader", async (req, res) => {
 
   try {
     console.log(req.body);
-    if (!invoiceTotalWithTax || !invoiceTotalNoTax || !clientID) {
+    if (!invoiceTotalWithTax || !invoiceTotalNoTax) {
       throw new Error("miss_data");
     }
 
@@ -205,5 +205,8 @@ router.put("/returnInvoice/:id", async (req, res) => {
     }
   }
 });
+
+
+
 
 module.exports = router;

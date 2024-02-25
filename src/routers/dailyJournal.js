@@ -49,6 +49,10 @@ router.post("/addDailyJournalForSales", async (req, res) => {
           chartAccount.treasury.amountDebit += dailyJournalObj.amountDebit;
           chartAccount.treasury.amountCredit += dailyJournalObj.amountCredit;
           chartAccount.treasury.balance += dailyJournalObj.amountDebit - dailyJournalObj.amountCredit
+        }else if(dailyJournalObj.info === "مصروفات"){
+          chartAccount.dailyExpenses.amountDebit += dailyJournalObj.amountDebit;
+          chartAccount.dailyExpenses.amountCredit += dailyJournalObj.amountCredit;
+          chartAccount.dailyExpenses.balance += dailyJournalObj.amountDebit - dailyJournalObj.amountCredit
         }
         await chartAccount.save();
         await dailyJournal.save();

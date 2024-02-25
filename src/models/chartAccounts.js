@@ -45,6 +45,17 @@ const chartAccountsSchema = new mongoose.Schema({
       type: Number,
     },
   },
+  dailyExpenses:{
+    amountDebit: {
+      type: Number,
+    },
+    amountCredit: {
+      type: Number,
+    },
+    balance: {
+      type: Number,
+    },
+  },
   parentChartAccountID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "MainChartAccount",
