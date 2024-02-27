@@ -19,6 +19,10 @@ const purchaseHeaderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  amountPaidDebit:{
+    type: Number,
+    required: true,
+  },
   paidYN: {
     type: Boolean,
     required: true,

@@ -16,7 +16,6 @@ router.post("/addInvoiceHeader", async (req, res) => {
   const profit = req.body.profit;
   const isPayment = req.body.isPayment;
   const isReturn = req.body.isReturn;
-
   try {
     console.log(req.body);
     if (!invoiceTotalWithTax || !invoiceTotalNoTax) {
@@ -34,6 +33,7 @@ router.post("/addInvoiceHeader", async (req, res) => {
       storeID,
       profit,
       isPayment,
+      amountPaidDebit: amountPaid,
       isReturn: isReturn? isReturn : false
     });
 
@@ -118,7 +118,7 @@ router.put("/invoice/:id", async (req, res) => {
   console.log(req.body);
   console.log(typeof req.body.paidYN);
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["paidYN", "amountPaid"];
+  const allowedUpdates = ["paidYN", "amountPaidDebit"];
   const isValidUpdates = updates.every((update) =>
     allowedUpdates.includes(update)
   );
@@ -161,9 +161,9 @@ router.put("/returnInvoice/:id", async (req, res) => {
 
   const updates = Object.keys(req.body.invoiceUpdates);
   const allowedUpdates = [
-    "invoiceTotalWithTax",
-    "invoiceTotalNoTax",
-    "amountPaid",
+    // "invoiceTotalWithTax",
+    // "invoiceTotalNoTax",
+    // "amountPaid",
     "profit",
   ];
   const isValidUpdates = updates.every((update) =>
