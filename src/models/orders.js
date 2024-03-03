@@ -28,6 +28,9 @@ const orderSchema = new mongoose.Schema({
       type: Number,
     }
   }],
+  total: {
+    type: Number,
+  },
   orderID: {
     type: Number,
     unique: true

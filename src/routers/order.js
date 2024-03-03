@@ -7,13 +7,13 @@ const Product = require("../models/products");
 router.post("/addOrder", async (req, res) => {
   const client = req.body.clientData;
   const products = req.body.products; 
-
+  const total = req.body.total
   try {
-    if (!client || !products ) {
+    if (!client || !products || !total) {
       throw new Error("miss_data");
     }
 
-    const order = new Order({ client, products});
+    const order = new Order({ client, products, total});
 
     await order.save();
     res.status(200).send({ order });
