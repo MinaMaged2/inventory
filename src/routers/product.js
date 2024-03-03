@@ -40,6 +40,18 @@ router.get("/products", async (req, res) => {
   }
 });
 
+// get all products online
+router.get("/products/online", async (req, res) => {
+  try {
+    const products = await Product.find({
+      online: true
+    }).sort({'name': 1});
+    res.status(200).send({ products });
+  } catch (e) {
+    res.status(400).send({ message: "an error has occurred" });
+  }
+});
+
 // get product
 router.get("/product/:id", async (req, res) => {
   const productID = req.params.id;

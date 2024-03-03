@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 // load all routers
 const productRouter = require('./routers/product');
 const clientRouter = require('./routers/client');
-// const orderRouter = require('./routers/order');
+const orderRouter = require('./routers/order');
 const supplierRouter = require('./routers/supplier');
 const inventoryMoveHeaderRouter = require('./routers/inventoryMoveHeader');
 const stockMovementRouter = require('./routers/stockMovement');
@@ -29,7 +29,7 @@ app.use(cors());
 // use our routers
 app.use(productRouter);
 app.use(clientRouter);
-// app.use(orderRouter);
+app.use(orderRouter);
 app.use(supplierRouter);
 app.use(inventoryMoveHeaderRouter);
 app.use(stockMovementRouter);

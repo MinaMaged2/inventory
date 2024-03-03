@@ -9,7 +9,7 @@ router.post("/addOrder", async (req, res) => {
   const products = req.body.products; 
 
   try {
-    if (!clientData || !products ) {
+    if (!client || !products ) {
       throw new Error("miss_data");
     }
 
