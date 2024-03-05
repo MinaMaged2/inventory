@@ -129,7 +129,8 @@ router.put("/products/price", async (req, res) => {
     const products = await Product.find({});
 
     for(let product of products){
-      product.price = product.price + ((product.price * increaseAmount) / 100)  
+      product.price = product.price + ((product.price * increaseAmount) / 100);
+      product.cost = product.cost + ((product.cost * increaseAmount) / 100)  
       product.lastEdit = editAt;
       await product.save();
     }

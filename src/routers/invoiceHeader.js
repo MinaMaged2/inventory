@@ -79,7 +79,8 @@ router.get("/InvoiceHeaders", async (req, res) => {
   }
 });
 
-// get all Invoices
+
+// get all Invoices for customer
 router.get("/InvoiceHeaders/:id", async (req, res) => {
   const clientID = req.params.id;
   const invoiceType = req.query.invoiceType;
@@ -99,6 +100,40 @@ router.get("/InvoiceHeaders/:id", async (req, res) => {
       const invoiceHeaders = await InvoiceHeader.find({
         clientID: clientID,
         paidYN: typeOfPay,
+        createdAt: { $gte: startFrom, $lte: endTo },
+      })
+        .populate("clientID")
+        .populate("storeID");
+      res.status(200).send({ invoiceHeaders });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).send({ message: "an error has occurred" });
+  }
+});
+
+// get all debit Invoices for customer
+router.get("/debitInvoiceHeaders/:id", async (req, res) => {
+  const clientID = req.params.id;
+  const invoiceType = req.query.invoiceType;
+  const startFrom = req.query.startFrom;
+  const endTo = req.query.endTo;
+  try {
+    if (invoiceType === "null") {
+      const invoiceHeaders = await InvoiceHeader.find({
+        clientID: clientID,
+        isReturn: false,
+        createdAt: { $gte: startFrom, $lte: endTo },
+      })
+        .populate("clientID")
+        .populate("storeID");
+      res.status(200).send({ invoiceHeaders });
+    } else {
+      let typeOfPay = invoiceType === "true" ? true : false;
+      const invoiceHeaders = await InvoiceHeader.find({
+        clientID: clientID,
+        paidYN: typeOfPay,
+        isReturn: false,
         createdAt: { $gte: startFrom, $lte: endTo },
       })
         .populate("clientID")
@@ -164,6 +199,7 @@ router.put("/returnInvoice/:id", async (req, res) => {
     // "invoiceTotalWithTax",
     // "invoiceTotalNoTax",
     // "amountPaid",
+    "amountPaidDebit",
     "profit",
   ];
   const isValidUpdates = updates.every((update) =>
