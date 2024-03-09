@@ -16,6 +16,8 @@ router.post("/addInvoiceHeader", async (req, res) => {
   const profit = req.body.profit;
   const isPayment = req.body.isPayment;
   const isReturn = req.body.isReturn;
+  const oldRemaining = req.body.oldRemaining;
+
   try {
     console.log(req.body);
     if (!invoiceTotalWithTax || !invoiceTotalNoTax) {
@@ -34,7 +36,8 @@ router.post("/addInvoiceHeader", async (req, res) => {
       profit,
       isPayment,
       amountPaidDebit: amountPaid,
-      isReturn: isReturn? isReturn : false
+      isReturn: isReturn? isReturn : false,
+      oldRemaining
     });
 
     await invoiceHeader.save();

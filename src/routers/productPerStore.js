@@ -8,18 +8,14 @@ router.post("/addProductPerStore", async (req, res) => {
   const productID = req.body.productID;
 
   try {
-    if (
-      !quantity ||
-      !storeID ||
-      !productID
-    ) {
+    if (!quantity || !storeID || !productID) {
       throw new Error("miss_data");
     }
 
     const productPerStore = new ProductPerStore({
       quantity,
       storeID,
-      productID
+      productID,
     });
 
     await productPerStore.save();
@@ -38,37 +34,122 @@ router.post("/addProductPerStore", async (req, res) => {
 router.get("/productPerStore/:storeId", async (req, res) => {
   const storeID = req.params.storeId;
   const finished = req.query.finished;
-  console.log(finished)
+  console.log(finished);
   try {
-    if(storeID === "0"){
+    if (storeID === "0") {
       let products;
-      if(finished == 'false'){
+      if (finished == "false") {
         products = await ProductPerStore.find({
-          'quantity': {$gte: 1}
-        }).populate('productID').populate('storeID').sort({'name': 1});
+          quantity: { $gte: 1 },
+        })
+          .populate("productID")
+          .populate("storeID")
+          .sort({ name: 1 });
         res.status(200).send({ products });
-        return
+        return;
       }
-      products = await ProductPerStore.find({}).populate('productID').populate('storeID').sort({'name': 1});
+      products = await ProductPerStore.find({})
+        .populate("productID")
+        .populate("storeID")
+        .sort({ name: 1 });
       res.status(200).send({ products });
-    }else{
+    } else {
       let products;
-      if(finished == 'false'){
+      if (finished == "false") {
         products = await ProductPerStore.find({
-          'quantity': {$gte: 1},
-          'storeID':  storeID
-        }).populate('productID').sort({'name': 1});
+          quantity: { $gte: 1 },
+          storeID: storeID,
+        })
+          .populate("productID")
+          .sort({ name: 1 });
         res.status(200).send({ products });
-        return
+        return;
       }
-      
-      products = await ProductPerStore.find({storeID}).populate('productID').sort({'name': 1});
+
+      products = await ProductPerStore.find({ storeID })
+        .populate("productID")
+        .sort({ name: 1 });
       res.status(200).send({ products });
     }
-    
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(400).send({ message: "an error has occurred" });
+  }
+});
+
+// get all products near to finish
+router.get("/nearToFinish/:storeId", async (req, res) => {
+  const storeID = req.params.storeId;
+  const finished = req.query.finished;
+  console.log(finished);
+  try {
+    if (storeID === "0") {
+      let products;
+      if (finished == "false") {
+        products = await ProductPerStore.find({
+          quantity: { $gte: 1 , $lte: 5},
+        })
+          .populate("productID")
+          .populate("storeID")
+          .sort({ name: 1 });
+        res.status(200).send({ products });
+        return;
+      }
+      products = await ProductPerStore.find({})
+        .populate("productID")
+        .populate("storeID")
+        .sort({ name: 1 });
+      res.status(200).send({ products });
+    } else {
+      let products;
+      if (finished == "false") {
+        products = await ProductPerStore.find({
+          quantity: { $gte: 1 , $lte: 5},
+          storeID: storeID,
+        })
+          .populate("productID")
+          .sort({ name: 1 });
+        res.status(200).send({ products });
+        return;
+      }
+
+      products = await ProductPerStore.find({ storeID })
+        .populate("productID")
+        .sort({ name: 1 });
+      res.status(200).send({ products });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).send({ message: "an error has occurred" });
+  }
+});
+
+// get products per store values 
+router.post("/productsPerStore/:storeID", async (req, res) => {
+  const storeID = req.params.storeID;
+  const productsIDs = req.body.products;
+
+  try {
+
+    
+    const productsPerStore = await ProductPerStore.find({
+      storeID,
+      'productID': {
+        $in: productsIDs
+      },
+    });
+
+    if (!productsPerStore) {
+      throw new Error("no_product");
+    }
+
+    res.status(200).send({ productsPerStore });
+  } catch (e) {
+    if (e.message === "no_product") {
+      res.status(400).send({ message: "لا يوجد منتج" });
+    } else {
+      res.status(400).send({ message: "حدث خطأ ما" });
+    }
   }
 });
 

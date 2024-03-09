@@ -119,7 +119,7 @@ router.put("/client/:id", async (req, res) => {
   const clientID = req.params.id;
 
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "phone", "address"];
+  const allowedUpdates = ["name", "phone", "address", "amountDebit"];
   const isValidUpdates = updates.every((update) =>
     allowedUpdates.includes(update)
   );
@@ -143,6 +143,7 @@ router.put("/client/:id", async (req, res) => {
 
     res.status(200).send({ client });
   } catch (e) {
+    console.log(e)
     if (e.code === 11000) {
       res.status(400).send({ message: "this client name already exist" });
     } else if (e.message === "no_client") {

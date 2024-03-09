@@ -53,6 +53,9 @@ const invoiceHeaderSchema = new mongoose.Schema(
     isReturn:{
       type: Boolean,
     },
+    oldRemaining:{
+      type: Number,
+    },
     invoiceHeaderID: {
       type: Number,
       unique: true,
