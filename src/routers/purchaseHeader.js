@@ -34,10 +34,10 @@ router.post("/addPurchaseHeader", async (req, res) => {
           });
 
           if (productPerStore) {
-            console.log("asdassss" + productPerStore);
             productPerStore.quantity += product.Quantity;
             productInStore.cost = product.Cost;
             productInStore.price = product.Price;
+            productInStore.code = product.Code;
           } else {
             productPerStore = new ProductPerStore({
               quantity: product.Quantity,
@@ -53,6 +53,7 @@ router.post("/addPurchaseHeader", async (req, res) => {
             name: product.Name,
             cost: product.Cost,
             price: product.Price,
+            code: product.Code,
             online: false,
           });
           newProducts.push(productInStore);

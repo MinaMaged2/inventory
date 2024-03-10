@@ -27,6 +27,10 @@ const productSchema = new mongoose.Schema({
   // lastModified: {
   //   type: Date
   // },
+  code: {
+    type: String,
+    trim: true,
+  },
   lastEdit:{
     type: Date
   },
