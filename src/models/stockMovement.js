@@ -49,6 +49,9 @@ const stockMovementSchema = new mongoose.Schema(
       },
       productPrice: {
         type: Number,
+      },
+      productCode: {
+        type: String,
       }
     },
     inventoryHeaderID: {
