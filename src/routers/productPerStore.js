@@ -34,24 +34,28 @@ router.post("/addProductPerStore", async (req, res) => {
 router.get("/productPerStore/:storeId", async (req, res) => {
   const storeID = req.params.storeId;
   const finished = req.query.finished;
-  console.log(finished);
+  console.log(finished, 'sf');
   try {
     if (storeID === "0") {
       let products;
       if (finished == "false") {
+        console.log('assd')
+        // products = await ProductPerStore.aggregate([
+        //   { $lookup: { from: "Product", localField: "productID", foreignField: "_id", as: "products" }},
+        //   { $sort: {'products.name': 1}}
+        // ])
+      
         products = await ProductPerStore.find({
           quantity: { $gte: 1 },
         })
-          .populate("productID")
-          .populate("storeID")
-          .sort({ name: 1 });
+          .populate({path: 'productID', options: { sort: { 'CreatedAt': 1 } }})
+          .populate("storeID");
         res.status(200).send({ products });
         return;
       }
       products = await ProductPerStore.find({})
-        .populate("productID")
-        .populate("storeID")
-        .sort({ name: 1 });
+        .populate({path: 'productID',options: {sort: {name: -1}}})
+        .populate("storeID");
       res.status(200).send({ products });
     } else {
       let products;
@@ -60,15 +64,13 @@ router.get("/productPerStore/:storeId", async (req, res) => {
           quantity: { $gte: 1 },
           storeID: storeID,
         })
-          .populate("productID")
-          .sort({ name: 1 });
+          .populate({path: 'productID',options: {sort: {name: -1}}});
         res.status(200).send({ products });
         return;
       }
 
       products = await ProductPerStore.find({ storeID })
-        .populate("productID")
-        .sort({ name: 1 });
+        .populate({path: 'productID', options: {sort: {name: -1}}});
       res.status(200).send({ products });
     }
   } catch (e) {
@@ -89,16 +91,14 @@ router.get("/nearToFinish/:storeId", async (req, res) => {
         products = await ProductPerStore.find({
           quantity: { $gte: 1 , $lte: 5},
         })
-          .populate("productID")
-          .populate("storeID")
-          .sort({ name: 1 });
+          .populate({path: 'productID', options: {sort: [['name', 'asc']]}})
+          .populate("storeID");
         res.status(200).send({ products });
         return;
       }
       products = await ProductPerStore.find({})
-        .populate("productID")
-        .populate("storeID")
-        .sort({ name: 1 });
+        .populate({path: 'productID', options: {sort: [['name', 'asc']]}})
+        .populate("storeID");
       res.status(200).send({ products });
     } else {
       let products;
@@ -107,15 +107,13 @@ router.get("/nearToFinish/:storeId", async (req, res) => {
           quantity: { $gte: 1 , $lte: 5},
           storeID: storeID,
         })
-          .populate("productID")
-          .sort({ name: 1 });
+          .populate({path: 'productID', options: {sort: [['name', 'asc']]}});
         res.status(200).send({ products });
         return;
       }
 
       products = await ProductPerStore.find({ storeID })
-        .populate("productID")
-        .sort({ name: 1 });
+        .populate({path: 'productID', options: {sort: [['name', 'asc']]}});
       res.status(200).send({ products });
     }
   } catch (e) {
