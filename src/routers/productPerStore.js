@@ -39,12 +39,6 @@ router.get("/productPerStore/:storeId", async (req, res) => {
     if (storeID === "0") {
       let products;
       if (finished == "false") {
-        console.log('assd')
-        // products = await ProductPerStore.aggregate([
-        //   { $lookup: { from: "Product", localField: "productID", foreignField: "_id", as: "products" }},
-        //   { $sort: {'products.name': 1}}
-        // ])
-      
         products = await ProductPerStore.find({
           quantity: { $gte: 1 },
         })
@@ -91,13 +85,13 @@ router.get("/nearToFinish/:storeId", async (req, res) => {
         products = await ProductPerStore.find({
           quantity: { $gte: 1 , $lte: 5},
         })
-          .populate({path: 'productID', options: {sort: [['name', 'asc']]}})
+          .populate('productID')
           .populate("storeID");
         res.status(200).send({ products });
         return;
       }
       products = await ProductPerStore.find({})
-        .populate({path: 'productID', options: {sort: [['name', 'asc']]}})
+        .populate('productID')
         .populate("storeID");
       res.status(200).send({ products });
     } else {
@@ -107,13 +101,13 @@ router.get("/nearToFinish/:storeId", async (req, res) => {
           quantity: { $gte: 1 , $lte: 5},
           storeID: storeID,
         })
-          .populate({path: 'productID', options: {sort: [['name', 'asc']]}});
+          .populate('productID');
         res.status(200).send({ products });
         return;
       }
 
       products = await ProductPerStore.find({ storeID })
-        .populate({path: 'productID', options: {sort: [['name', 'asc']]}});
+        .populate('productID');
       res.status(200).send({ products });
     }
   } catch (e) {

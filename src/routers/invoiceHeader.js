@@ -36,8 +36,8 @@ router.post("/addInvoiceHeader", async (req, res) => {
       profit,
       isPayment,
       amountPaidDebit: amountPaid,
-      isReturn: isReturn? isReturn : false,
-      oldRemaining
+      isReturn: isReturn ? isReturn : false,
+      oldRemaining,
     });
 
     await invoiceHeader.save();
@@ -57,31 +57,54 @@ router.get("/InvoiceHeaders", async (req, res) => {
   const invoiceType = req.query.invoiceType;
   const startFrom = req.query.startFrom;
   const endTo = req.query.endTo;
+  const storeID = req.query.storeID;
   try {
     if (invoiceType == "null") {
-      const invoiceHeaders = await InvoiceHeader.find({
-        createdAt: { $gte: startFrom, $lte: endTo },
-      })
-        .populate("clientID")
-        .populate("storeID")
-        .sort({ createdAt: "desc" });
-      res.status(200).send({ invoiceHeaders });
+      if (storeID != 'null' && storeID && storeID != 'undefined') {
+        const invoiceHeaders = await InvoiceHeader.find({
+          createdAt: { $gte: startFrom, $lte: endTo },
+          storeID,
+        })
+          .populate("clientID")
+          .populate("storeID")
+          .sort({ createdAt: "desc" });
+        res.status(200).send({ invoiceHeaders });
+      } else {
+        const invoiceHeaders = await InvoiceHeader.find({
+          createdAt: { $gte: startFrom, $lte: endTo },
+        })
+          .populate("clientID")
+          .populate("storeID")
+          .sort({ createdAt: "desc" });
+        res.status(200).send({ invoiceHeaders });
+      }
     } else {
-      const invoiceHeaders = await InvoiceHeader.find({
-        paidYN: invoiceType,
-        createdAt: { $gte: startFrom, $lte: endTo },
-      })
-        .populate("clientID")
-        .populate("storeID")
-        .sort({ createdAt: "desc" });
-      res.status(200).send({ invoiceHeaders });
+      if (storeID != 'null' && storeID && storeID != 'undefined') {
+        const invoiceHeaders = await InvoiceHeader.find({
+          paidYN: invoiceType,
+          createdAt: { $gte: startFrom, $lte: endTo },
+          storeID,
+        })
+          .populate("clientID")
+          .populate("storeID")
+          .sort({ createdAt: "desc" });
+        res.status(200).send({ invoiceHeaders });
+      } else {
+        const invoiceHeaders = await InvoiceHeader.find({
+          paidYN: invoiceType,
+          createdAt: { $gte: startFrom, $lte: endTo },
+        })
+          .populate("clientID")
+          .populate("storeID")
+          .sort({ createdAt: "desc" });
+        res.status(200).send({ invoiceHeaders });
+      }
     }
   } catch (e) {
     console.log(e);
     res.status(400).send({ message: "an error has occurred" });
   }
 });
-
 
 // get all Invoices for customer
 router.get("/InvoiceHeaders/:id", async (req, res) => {
@@ -234,7 +257,7 @@ router.put("/returnInvoice/:id", async (req, res) => {
 
     res.status(200).send({ invoice });
   } catch (e) {
-    console.log(e)
+    console.log(e);
     if (e.message === "no_invoice") {
       res.status(400).send({ message: "no client with this ID" });
     } else if (e.message === "invalid_updates") {
@@ -244,8 +267,5 @@ router.put("/returnInvoice/:id", async (req, res) => {
     }
   }
 });
-
-
-
 
 module.exports = router;

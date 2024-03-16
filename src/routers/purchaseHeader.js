@@ -98,27 +98,52 @@ router.get("/PurchaseHeaders", async (req, res) => {
   const purchaseType = req.query.invoiceType;
   const startFrom = req.query.startFrom;
   const endTo = req.query.endTo;
-
+  const storeID = req.query.storeID;
   try {
     if (purchaseType === "null") {
-      console.log("1");
-      const purchaseHeaders = await PurchaseHeader.find({
-        createdAt: { $gte: startFrom, $lte: endTo },
-      })
-        .populate("supplierID")
-        .populate("storeID")
-        .sort({ createdAt: "desc" });
-      res.status(200).send({ purchaseHeaders });
+      
+      if(storeID != 'null' && storeID && storeID != 'undefined'){
+        const purchaseHeaders = await PurchaseHeader.find({
+          createdAt: { $gte: startFrom, $lte: endTo },
+          storeID
+        })
+          .populate("supplierID")
+          .populate("storeID")
+          .sort({ createdAt: "desc" });
+        res.status(200).send({ purchaseHeaders });
+      }else{
+        const purchaseHeaders = await PurchaseHeader.find({
+          createdAt: { $gte: startFrom, $lte: endTo },
+        })
+          .populate("supplierID")
+          .populate("storeID")
+          .sort({ createdAt: "desc" });
+        res.status(200).send({ purchaseHeaders });
+      }
+      
     } else {
-      console.log("2");
-      const purchaseHeaders = await PurchaseHeader.find({
-        paidYN: purchaseType,
-        createdAt: { $gte: startFrom, $lte: endTo },
-      })
-        .populate("supplierID")
-        .populate("storeID")
-        .sort({ createdAt: "desc" });
-      res.status(200).send({ purchaseHeaders });
+      
+      if(storeID != 'null' && storeID && storeID != 'undefined'){
+        const purchaseHeaders = await PurchaseHeader.find({
+          paidYN: purchaseType,
+          createdAt: { $gte: startFrom, $lte: endTo },
+          storeID
+        })
+          .populate("supplierID")
+          .populate("storeID")
+          .sort({ createdAt: "desc" });
+        res.status(200).send({ purchaseHeaders });
+      }else{
+        const purchaseHeaders = await PurchaseHeader.find({
+          paidYN: purchaseType,
+          createdAt: { $gte: startFrom, $lte: endTo },
+        })
+          .populate("supplierID")
+          .populate("storeID")
+          .sort({ createdAt: "desc" });
+        res.status(200).send({ purchaseHeaders });
+      }
+      
     }
   } catch (e) {
     console.log(e);

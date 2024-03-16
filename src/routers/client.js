@@ -3,9 +3,10 @@ const router = new express.Router();
 const Client = require("../models/clients");
 const MainChartAccount = require("../models/mainChartAccount");
 const ChartAccount = require("../models/chartAccounts");
+const auth = require("../middleware/auth");
 
 // add client
-router.post("/addClient", async (req, res) => {
+router.post("/addClient", auth,async (req, res) => {
   const name = req.body.name;
   const phone = req.body.phone;
   const address = req.body.address;
@@ -61,7 +62,7 @@ router.post("/addClient", async (req, res) => {
 });
 
 // get all clients
-router.get("/clients", async (req, res) => {
+router.get("/clients",  auth,async (req, res) => {
   try {
     const client = await Client.find({}).sort({ name: 1 });
     res.status(200).send({ client });
@@ -71,7 +72,7 @@ router.get("/clients", async (req, res) => {
 });
 
 // get client
-router.get("/client/:id", async (req, res) => {
+router.get("/client/:id",  auth,async (req, res) => {
   const clientID = req.params.id;
 
   try {
@@ -91,7 +92,7 @@ router.get("/client/:id", async (req, res) => {
   }
 });
 
-router.get("/clientAccount/:id", async (req, res) => {
+router.get("/clientAccount/:id",  auth,async (req, res) => {
   const clientID = req.params.id;
 
   try {
@@ -115,7 +116,7 @@ router.get("/clientAccount/:id", async (req, res) => {
 
 
 // edit client
-router.put("/client/:id", async (req, res) => {
+router.put("/client/:id",  auth,async (req, res) => {
   const clientID = req.params.id;
 
   const updates = Object.keys(req.body);
@@ -157,7 +158,7 @@ router.put("/client/:id", async (req, res) => {
 });
 
 // delete client
-router.delete("/client/:id/", async (req, res) => {
+router.delete("/client/:id/",  auth,async (req, res) => {
   const clientID = req.params.id;
 
   try {
@@ -170,7 +171,7 @@ router.delete("/client/:id/", async (req, res) => {
 });
 
 // delete clients
-router.delete("/clients", async (req, res) => {
+router.delete("/clients",  auth,async (req, res) => {
   const clientsToDelete = req.body.Customers;
   console.log(clientsToDelete)
   try {

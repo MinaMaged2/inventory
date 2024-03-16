@@ -5,8 +5,8 @@ const Product = require("../models/products");
 // add product
 router.post("/addProduct", async (req, res) => {
   const name = req.body.name;
-  const cost = req.body.cost;
-  const price = req.body.price;
+  const cost = Math.round((req.body.cost + Number.EPSILON) * 100) / 100;
+  const price = Math.round((req.body.price + Number.EPSILON) * 100) / 100;
   
   try {
     if (!name || !cost || !price ) {
@@ -98,7 +98,12 @@ router.put("/product/:id", async (req, res) => {
     }
 
     updates.forEach((update) => {
-      product[update] = req.body[update];
+      if(product[update] === 'cost' || product[update] === 'price'){
+        product[update] = Math.round((req.body[update] + Number.EPSILON) * 100) / 100;
+      }else{
+        product[update] = req.body[update];
+      }
+      
     });
 
     if(req.body.cost && req.body.cost){
@@ -129,8 +134,8 @@ router.put("/products/price", async (req, res) => {
     const products = await Product.find({});
 
     for(let product of products){
-      product.price = product.price + ((product.price * increaseAmount) / 100);
-      product.cost = product.cost + ((product.cost * increaseAmount) / 100)  
+      product.price = Math.round(((product.price + ((product.price * increaseAmount) / 100)) + Number.EPSILON) * 100) / 100;
+      product.cost = Math.round(((product.cost + ((product.cost * increaseAmount) / 100)) + Number.EPSILON) * 100) / 100;  
       product.lastEdit = editAt;
       await product.save();
     }
