@@ -52,11 +52,11 @@ router.post("/addClient", auth,async (req, res) => {
   } catch (e) {
     console.log(e.message);
     if (e.message === "miss_data") {
-      res.status(400).send({ message: "there are messing data" });
+      res.status(400).send({ message: "بيانات العميل غير مكتملة" });
     } else if (e.code === 11000) {
-      res.status(400).send({ message: "this client name already exist" });
+      res.status(400).send({ message: "هذا العميل موجود بالفعل" });
     } else {
-      res.status(400).send({ message: "an error has occurred" });
+      res.status(400).send({ message: "حدث خطء ما" });
     }
   }
 });
@@ -88,6 +88,27 @@ router.get("/client/:id",  auth,async (req, res) => {
       res.status(400).send({ message: "no client with this ID" });
     } else {
       res.status(400).send({ message: "an error has occurred" });
+    }
+  }
+});
+
+// get client by name
+router.get("/clientName/:name",  auth,async (req, res) => {
+  const clientName = req.params.name.trim();
+
+  try {
+    const client = await Client.findOne({name: clientName});
+
+    if (!client) {
+      throw new Error("no_client");
+    }
+
+    res.status(200).send({ client });
+  } catch (e) {
+    if (e.message === "no_client") {
+      res.status(400).send({ message: "لا يوجد عميل بهذا الاسم" });
+    } else {
+      res.status(400).send({ message: "حدث خطء ما" });
     }
   }
 });

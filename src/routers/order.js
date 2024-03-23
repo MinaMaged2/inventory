@@ -30,7 +30,7 @@ router.post("/addOrder", async (req, res) => {
 // get all orders
 router.get("/orders", async (req, res) => {
   try {
-    const orders = await Order.find({});
+    const orders = await Order.find({}).populate('products.productID');
     res.status(200).send({ orders });
   } catch (e) {
     res.status(400).send({ message: "an error has occurred" });
