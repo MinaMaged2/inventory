@@ -83,7 +83,7 @@ router.get("/nearToFinish/:storeId", async (req, res) => {
       let products;
       if (finished == "false") {
         products = await ProductPerStore.find({
-          quantity: { $gte: 1 , $lte: 5},
+          quantity: { $lte: 5},
         })
           .populate('productID')
           .populate("storeID");
@@ -98,7 +98,7 @@ router.get("/nearToFinish/:storeId", async (req, res) => {
       let products;
       if (finished == "false") {
         products = await ProductPerStore.find({
-          quantity: { $gte: 1 , $lte: 5},
+          quantity: { $lte: 5},
           storeID: storeID,
         })
           .populate('productID');
