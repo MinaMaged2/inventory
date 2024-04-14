@@ -6,7 +6,7 @@ const ChartAccount = require("../models/chartAccounts");
 const auth = require("../middleware/auth");
 
 // add client
-router.post("/addClient", auth,async (req, res) => {
+router.post("/addClient", async (req, res) => {
   const name = req.body.name;
   const phone = req.body.phone;
   const address = req.body.address;
@@ -62,7 +62,7 @@ router.post("/addClient", auth,async (req, res) => {
 });
 
 // get all clients
-router.get("/clients",  auth,async (req, res) => {
+router.get("/clients", async (req, res) => {
   try {
     const client = await Client.find({}).sort({ name: 1 });
     res.status(200).send({ client });
@@ -72,7 +72,7 @@ router.get("/clients",  auth,async (req, res) => {
 });
 
 // get client
-router.get("/client/:id",  auth,async (req, res) => {
+router.get("/client/:id", async (req, res) => {
   const clientID = req.params.id;
 
   try {
@@ -93,7 +93,7 @@ router.get("/client/:id",  auth,async (req, res) => {
 });
 
 // get client by name
-router.get("/clientName/:name",  auth,async (req, res) => {
+router.get("/clientName/:name", async (req, res) => {
   const clientName = req.params.name.trim();
 
   try {
@@ -113,7 +113,7 @@ router.get("/clientName/:name",  auth,async (req, res) => {
   }
 });
 
-router.get("/clientAccount/:id",  auth,async (req, res) => {
+router.get("/clientAccount/:id", async (req, res) => {
   const clientID = req.params.id;
 
   try {
@@ -137,7 +137,7 @@ router.get("/clientAccount/:id",  auth,async (req, res) => {
 
 
 // edit client
-router.put("/client/:id",  auth,async (req, res) => {
+router.put("/client/:id", async (req, res) => {
   const clientID = req.params.id;
 
   const updates = Object.keys(req.body);
@@ -179,7 +179,7 @@ router.put("/client/:id",  auth,async (req, res) => {
 });
 
 // delete client
-router.delete("/client/:id/",  auth,async (req, res) => {
+router.delete("/client/:id/", async (req, res) => {
   const clientID = req.params.id;
 
   try {
@@ -192,7 +192,7 @@ router.delete("/client/:id/",  auth,async (req, res) => {
 });
 
 // delete clients
-router.delete("/clients",  auth,async (req, res) => {
+router.delete("/clients", async (req, res) => {
   const clientsToDelete = req.body.Customers;
   console.log(clientsToDelete)
   try {

@@ -105,7 +105,7 @@ router.put("/editUser/:id", auth, async (req, res) => {
   }
 });
 
-router.post("/logout", auth, async (req, res) => {
+router.post("/logout",  async (req, res) => {
   try {
     req.user.token = null;
     await req.user.save();
@@ -117,7 +117,7 @@ router.post("/logout", auth, async (req, res) => {
 });
 
 // get all users
-router.get("/users", auth, async (req, res) => {
+router.get("/users",  async (req, res) => {
   try {
     const users = await User.find({ type: { $ne: "admin" } }).sort({ name: 1 });
     res.status(200).send({ users });
