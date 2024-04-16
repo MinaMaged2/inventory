@@ -34,13 +34,13 @@ router.post("/addPurchaseHeader", async (req, res) => {
           });
 
           if (productPerStore) {
-            productPerStore.quantity += product.Quantity;
+            // productPerStore.quantity += product.Quantity;
             productInStore.cost = product.Cost;
             productInStore.price = product.Price;
             productInStore.code = product.Code;
           } else {
             productPerStore = new ProductPerStore({
-              quantity: product.Quantity,
+              quantity: 0,
               storeID: storeID,
               productID: productInStore._id,
             });
@@ -59,11 +59,10 @@ router.post("/addPurchaseHeader", async (req, res) => {
           newProducts.push(productInStore);
           await productInStore.save();
           let productPerStore = new ProductPerStore({
-            quantity: product.Quantity,
+            quantity: 0,
             storeID: storeID,
             productID: productInStore._id,
           });
-          console.log("asda" + productPerStore);
           await productPerStore.save();
         }
       }

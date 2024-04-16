@@ -62,7 +62,7 @@ router.post("/addClient", async (req, res) => {
 });
 
 // get all clients
-router.get("/clients", async (req, res) => {
+router.get("/clients", auth,async (req, res) => {
   try {
     const client = await Client.find({}).sort({ name: 1 });
     res.status(200).send({ client });
