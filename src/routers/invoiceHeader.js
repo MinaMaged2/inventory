@@ -17,6 +17,7 @@ router.post("/addInvoiceHeader", async (req, res) => {
   const isPayment = req.body.isPayment;
   const isReturn = req.body.isReturn;
   const oldRemaining = req.body.oldRemaining;
+  const descText = req.body.descText;
 
   try {
     console.log(req.body);
@@ -27,6 +28,7 @@ router.post("/addInvoiceHeader", async (req, res) => {
     const invoiceHeader = new InvoiceHeader({
       type,
       description,
+      descText,
       invoiceTotalWithTax,
       invoiceTotalNoTax,
       amountPaid,
