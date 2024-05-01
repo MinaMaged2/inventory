@@ -64,6 +64,9 @@ const invoiceHeaderSchema = new mongoose.Schema(
       type: Number,
       unique: true,
     },
+    operationDate: {
+      type: Date
+    },
   },
   {
     timestamps: true,

@@ -12,7 +12,9 @@ router.post("/addStockMovement", async (req, res) => {
   const storeID = req.body.storeID;
   const product = req.body.product;
   const inventoryHeaderID = req.body.inventoryHeaderID;
+  const operationDate = req.body.operationDate;
 
+  
   try {
     if (
       !change ||
@@ -35,7 +37,8 @@ router.post("/addStockMovement", async (req, res) => {
       description,
       storeID,
       product,
-      inventoryHeaderID
+      inventoryHeaderID,
+      operationDate
     });
 
     await stockMovement.save();

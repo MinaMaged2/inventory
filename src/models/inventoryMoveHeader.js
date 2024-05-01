@@ -23,7 +23,10 @@ const inventoryMoveHeaderSchema = new mongoose.Schema({
   inventoryMoveHeaderID: {
     type: Number,
     unique: true
-  }
+  },
+  operationDate: {
+    type: Date
+  },
 
 },
 {

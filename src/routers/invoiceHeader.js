@@ -18,6 +18,7 @@ router.post("/addInvoiceHeader", async (req, res) => {
   const isReturn = req.body.isReturn;
   const oldRemaining = req.body.oldRemaining;
   const descText = req.body.descText;
+  const operationDate = req.body.operationDate;
 
   try {
     console.log(req.body);
@@ -40,6 +41,7 @@ router.post("/addInvoiceHeader", async (req, res) => {
       amountPaidDebit: amountPaid,
       isReturn: isReturn ? isReturn : false,
       oldRemaining,
+      operationDate
     });
 
     await invoiceHeader.save();
@@ -64,41 +66,41 @@ router.get("/InvoiceHeaders", async (req, res) => {
     if (invoiceType == "null") {
       if (storeID != 'null' && storeID && storeID != 'undefined') {
         const invoiceHeaders = await InvoiceHeader.find({
-          createdAt: { $gte: startFrom, $lte: endTo },
+          operationDate: { $gte: startFrom, $lte: endTo },
           storeID,
         })
           .populate("clientID")
           .populate("storeID")
-          .sort({ createdAt: "desc" });
+          .sort({ operationDate: "desc" });
         res.status(200).send({ invoiceHeaders });
       } else {
         const invoiceHeaders = await InvoiceHeader.find({
-          createdAt: { $gte: startFrom, $lte: endTo },
+          operationDate: { $gte: startFrom, $lte: endTo },
         })
           .populate("clientID")
           .populate("storeID")
-          .sort({ createdAt: "desc" });
+          .sort({ operationDate: "desc" });
         res.status(200).send({ invoiceHeaders });
       }
     } else {
       if (storeID != 'null' && storeID && storeID != 'undefined') {
         const invoiceHeaders = await InvoiceHeader.find({
           paidYN: invoiceType,
-          createdAt: { $gte: startFrom, $lte: endTo },
+          operationDate: { $gte: startFrom, $lte: endTo },
           storeID,
         })
           .populate("clientID")
           .populate("storeID")
-          .sort({ createdAt: "desc" });
+          .sort({ operationDate: "desc" });
         res.status(200).send({ invoiceHeaders });
       } else {
         const invoiceHeaders = await InvoiceHeader.find({
           paidYN: invoiceType,
-          createdAt: { $gte: startFrom, $lte: endTo },
+          operationDate: { $gte: startFrom, $lte: endTo },
         })
           .populate("clientID")
           .populate("storeID")
-          .sort({ createdAt: "desc" });
+          .sort({ operationDate: "desc" });
         res.status(200).send({ invoiceHeaders });
       }
     }
@@ -118,7 +120,7 @@ router.get("/InvoiceHeaders/:id", async (req, res) => {
     if (invoiceType === "null") {
       const invoiceHeaders = await InvoiceHeader.find({
         clientID: clientID,
-        createdAt: { $gte: startFrom, $lte: endTo },
+        operationDate: { $gte: startFrom, $lte: endTo },
       })
         .populate("clientID")
         .populate("storeID");
@@ -128,7 +130,7 @@ router.get("/InvoiceHeaders/:id", async (req, res) => {
       const invoiceHeaders = await InvoiceHeader.find({
         clientID: clientID,
         paidYN: typeOfPay,
-        createdAt: { $gte: startFrom, $lte: endTo },
+        operationDate: { $gte: startFrom, $lte: endTo },
       })
         .populate("clientID")
         .populate("storeID");
@@ -151,7 +153,7 @@ router.get("/debitInvoiceHeaders/:id", async (req, res) => {
       const invoiceHeaders = await InvoiceHeader.find({
         clientID: clientID,
         isReturn: false,
-        createdAt: { $gte: startFrom, $lte: endTo },
+        operationDate: { $gte: startFrom, $lte: endTo },
       })
         .populate("clientID")
         .populate("storeID");
@@ -162,7 +164,7 @@ router.get("/debitInvoiceHeaders/:id", async (req, res) => {
         clientID: clientID,
         paidYN: typeOfPay,
         isReturn: false,
-        createdAt: { $gte: startFrom, $lte: endTo },
+        operationDate: { $gte: startFrom, $lte: endTo },
       })
         .populate("clientID")
         .populate("storeID");

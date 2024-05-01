@@ -14,6 +14,8 @@ router.post("/addPurchaseHeader", async (req, res) => {
   const supplierID = req.body.supplierID;
   const products = req.body.products;
   const isPayment = req.body.isPayment;
+  const operationDate = req.body.operationDate;
+  
   try {
     if (!invoiceTotalWithTax || !supplierID) {
       throw new Error("miss_data");
@@ -77,7 +79,8 @@ router.post("/addPurchaseHeader", async (req, res) => {
       supplierID,
       storeID,
       isPayment,
-      amountPaidDebit: amountPaid
+      amountPaidDebit: amountPaid,
+      operationDate
     });
 
     await purchaseHeader.save();
@@ -103,20 +106,20 @@ router.get("/PurchaseHeaders", async (req, res) => {
       
       if(storeID != 'null' && storeID && storeID != 'undefined'){
         const purchaseHeaders = await PurchaseHeader.find({
-          createdAt: { $gte: startFrom, $lte: endTo },
+          operationDate: { $gte: startFrom, $lte: endTo },
           storeID
         })
           .populate("supplierID")
           .populate("storeID")
-          .sort({ createdAt: "desc" });
+          .sort({ operationDate: "desc" });
         res.status(200).send({ purchaseHeaders });
       }else{
         const purchaseHeaders = await PurchaseHeader.find({
-          createdAt: { $gte: startFrom, $lte: endTo },
+          operationDate: { $gte: startFrom, $lte: endTo },
         })
           .populate("supplierID")
           .populate("storeID")
-          .sort({ createdAt: "desc" });
+          .sort({ operationDate: "desc" });
         res.status(200).send({ purchaseHeaders });
       }
       
@@ -125,21 +128,21 @@ router.get("/PurchaseHeaders", async (req, res) => {
       if(storeID != 'null' && storeID && storeID != 'undefined'){
         const purchaseHeaders = await PurchaseHeader.find({
           paidYN: purchaseType,
-          createdAt: { $gte: startFrom, $lte: endTo },
+          operationDate: { $gte: startFrom, $lte: endTo },
           storeID
         })
           .populate("supplierID")
           .populate("storeID")
-          .sort({ createdAt: "desc" });
+          .sort({ operationDate: "desc" });
         res.status(200).send({ purchaseHeaders });
       }else{
         const purchaseHeaders = await PurchaseHeader.find({
           paidYN: purchaseType,
-          createdAt: { $gte: startFrom, $lte: endTo },
+          operationDate: { $gte: startFrom, $lte: endTo },
         })
           .populate("supplierID")
           .populate("storeID")
-          .sort({ createdAt: "desc" });
+          .sort({ operationDate: "desc" });
         res.status(200).send({ purchaseHeaders });
       }
       
@@ -160,7 +163,7 @@ router.get("/PurchaseHeaders/:id", async (req, res) => {
     if (invoiceType === "null") {
       const invoiceHeaders = await PurchaseHeader.find({
         supplierID: supplierID,
-        createdAt: { $gte: startFrom, $lte: endTo },
+        operationDate: { $gte: startFrom, $lte: endTo },
       })
         .populate("supplierID")
         .populate("storeID");
@@ -170,7 +173,7 @@ router.get("/PurchaseHeaders/:id", async (req, res) => {
       const invoiceHeaders = await PurchaseHeader.find({
         supplierID: supplierID,
         paidYN: typeOfPay,
-        createdAt: { $gte: startFrom, $lte: endTo },
+        operationDate: { $gte: startFrom, $lte: endTo },
       })
         .populate("supplierID")
         .populate("storeID");

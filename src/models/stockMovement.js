@@ -62,6 +62,9 @@ const stockMovementSchema = new mongoose.Schema(
     stockMovementID: {
       type: Number,
       unique: true
+    },
+    operationDate: {
+      type: Date
     }
   },
   {

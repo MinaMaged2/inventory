@@ -41,6 +41,9 @@ const purchaseHeaderSchema = new mongoose.Schema({
   purchaseHeaderID: {
     type: Number,
     unique: true
+  },
+  operationDate: {
+    type: Date
   }
 
 },

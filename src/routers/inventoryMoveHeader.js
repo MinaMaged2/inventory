@@ -12,7 +12,8 @@ router.post("/addInventoryMoveHeader", async (req, res) => {
   const storeID = req.body.storeID;
   const invoiceRefHeaderID = req.body.invoiceRefHeaderID;
   const products = req.body.products;
-
+  const operationDate = req.body.operationDate;
+  
   try {
     if (
       !type ||
@@ -28,7 +29,8 @@ router.post("/addInventoryMoveHeader", async (req, res) => {
       type,
       description,
       storeID,
-      invoiceRefHeaderID
+      invoiceRefHeaderID,
+      operationDate
     });
     await inventoryMoveHeader.save();
     for(let product of products){
@@ -43,6 +45,7 @@ router.post("/addInventoryMoveHeader", async (req, res) => {
         'amountOfReturn': 0,
         'product': product.product,
         'inventoryHeaderID': inventoryMoveHeader._id,
+        operationDate
       });
       productPerStoreData.quantity += product.change;
       if(productPerStoreData.quantity < 0){
@@ -74,7 +77,8 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
   const storeID = req.body.storeID;
   const invoiceRefHeaderID = req.body.invoiceRefHeaderID;
   const products = req.body.products;
-
+  const operationDate = req.body.operationDate;
+  
   try {
     if (
       !type ||
@@ -138,7 +142,8 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
       type,
       description,
       storeID,
-      invoiceRefHeaderID
+      invoiceRefHeaderID,
+      operationDate
     });
     await inventoryMoveHeader.save();
 
@@ -154,6 +159,7 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
         'amountOfReturn': 0,
         'product': product._id,
         'inventoryHeaderID': inventoryMoveHeader._id,
+        operationDate
       });
       
       await stockMovement.save();
@@ -180,7 +186,8 @@ router.post("/InventoryMoveHeaderStores", async (req, res) => {
   const storeID = req.body.storeID;
   const invoiceRefHeaderID = req.body.invoiceRefHeaderID;
   const products = req.body.products;
-
+  const operationDate = req.body.operationDate;
+  
   try {
     if (
       !type ||
@@ -197,7 +204,8 @@ router.post("/InventoryMoveHeaderStores", async (req, res) => {
       type,
       description,
       storeID,
-      invoiceRefHeaderID
+      invoiceRefHeaderID,
+      operationDate
     });
     await inventoryMoveHeader.save();
 
@@ -222,6 +230,7 @@ router.post("/InventoryMoveHeaderStores", async (req, res) => {
         'amountOfReturn': 0,
         'product': product.product,
         'inventoryHeaderID': inventoryMoveHeader._id,
+        operationDate
       });
       productPerStoreData.quantity += product.change
       if(productPerStoreData.quantity < 0){
