@@ -20,7 +20,7 @@ router.post("/addPurchaseHeader", async (req, res) => {
     if (!invoiceTotalWithTax || !supplierID) {
       throw new Error("miss_data");
     }
-
+    console.log('purchase: ', products)
     let newProducts = [];
     // {name, cost, price, quantity}
 
@@ -82,7 +82,7 @@ router.post("/addPurchaseHeader", async (req, res) => {
       amountPaidDebit: amountPaid,
       operationDate
     });
-
+    console.log('products: ', newProducts)
     await purchaseHeader.save();
     res.status(200).send({ purchaseHeader, products: newProducts });
   } catch (e) {

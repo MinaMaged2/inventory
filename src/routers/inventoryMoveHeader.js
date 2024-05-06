@@ -25,6 +25,7 @@ router.post("/addInventoryMoveHeader", async (req, res) => {
       throw new Error("miss_data");
     }
 
+    console.log('inventoryBody: ', products)
     const inventoryMoveHeader = new InventoryMoveHeader({
       type,
       description,
@@ -34,6 +35,7 @@ router.post("/addInventoryMoveHeader", async (req, res) => {
     });
     await inventoryMoveHeader.save();
     for(let product of products){
+      
       let productPerStoreData = await ProductPerStore.findOne({'productID': product._id, 'storeID': storeID});
       let stockMovement = new StockMovement({
         'change': product.change,
@@ -53,6 +55,7 @@ router.post("/addInventoryMoveHeader", async (req, res) => {
       }
       await productPerStoreData.save();
       await stockMovement.save();
+      console.log('stock move: ',product)
     }
 
   
@@ -89,11 +92,11 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
     ) {
       throw new Error("miss_data");
     }
-    console.log(storeID)
     let newProducts = [];
     if(products){
       for (let product of products) {
         let productInStore = await Product.findOne({ name: product.Name.trim() });
+        
         if (productInStore) {
           let productPerStore = await ProductPerStore.findOne({
             productID: productInStore._id,
@@ -111,8 +114,10 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
               storeID: storeID,
               productID: productInStore._id
             });
+
+
           }
-          newProducts.push({...productInStore,quantity: product.Quantity })
+          newProducts.push({...productInStore._doc,quantity: product.Quantity })
           await productInStore.save();
           await productPerStore.save();
         } else {
@@ -124,15 +129,13 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
             online: false
           });
           
-          await productInStore.save();
+          const savedProduct = await productInStore.save();
           let productPerStore = new ProductPerStore({
             quantity: +product.Quantity,
             storeID: storeID,
             productID: productInStore._id
           });
-          newProducts.push({...productInStore,quantity: product.Quantity })
-          console.log( product.Quantity)
-          console.log( "asda" + productPerStore.quantity)
+          newProducts.push({...savedProduct._doc,quantity: product.Quantity })          
           await productPerStore.save();
         }
       }
@@ -148,7 +151,7 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
     await inventoryMoveHeader.save();
 
     for(let product of newProducts){
-      console.log(product)
+      // console.log(product);
       let stockMovement = new StockMovement({
         'change': 0,
         'type': 'in',
@@ -157,7 +160,14 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
         'description': description,
         'storeID': storeID,
         'amountOfReturn': 0,
-        'product': product._id,
+        'product': {
+          product_id: product._id,
+          productID: product.productID,
+          productName: product.name,
+          productCost: product.cost,
+          productPrice: product.price,
+          productCode: product.code
+        },
         'inventoryHeaderID': inventoryMoveHeader._id,
         operationDate
       });
