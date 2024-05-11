@@ -47,7 +47,7 @@ router.post("/addPurchaseHeader", async (req, res) => {
               productID: productInStore._id,
             });
           }
-          newProducts.push(productInStore);
+          newProducts.push({...productInStore._doc, quantity: product.Quantity });
           await productInStore.save();
           await productPerStore.save();
         } else {
@@ -58,7 +58,7 @@ router.post("/addPurchaseHeader", async (req, res) => {
             code: product.Code,
             online: false,
           });
-          newProducts.push(productInStore);
+          newProducts.push({...productInStore._doc, quantity: product.Quantity });
           await productInStore.save();
           let productPerStore = new ProductPerStore({
             quantity: 0,
