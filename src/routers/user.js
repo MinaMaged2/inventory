@@ -105,7 +105,7 @@ router.put("/editUser/:id", auth, async (req, res) => {
   }
 });
 
-router.post("/logout",  async (req, res) => {
+router.post("/logout", auth ,async (req, res) => {
   try {
     req.user.token = null;
     await req.user.save();
