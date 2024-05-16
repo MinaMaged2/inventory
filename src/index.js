@@ -20,6 +20,7 @@ const dailyJournalRouter = require('./routers/dailyJournal');
 const productPerStoreRouter = require('./routers/productPerStore');
 const chartAccountsRouter = require('./routers/chartAccounts');
 const settingRouter = require('./routers/settings');
+const bankRouter = require('./routers/bankInvoice');
 
 // connected port
 const port = process.env.PORT;
@@ -42,6 +43,7 @@ app.use(dailyJournalRouter);
 app.use(productPerStoreRouter);
 app.use(chartAccountsRouter);
 app.use(settingRouter);
+app.use(bankRouter);
 
 app.listen(port, ()=> {
   console.log("server is running " + port)

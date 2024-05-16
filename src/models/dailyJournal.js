@@ -23,7 +23,6 @@ const dailyJournalSchema = new mongoose.Schema(
     },
     invoicesHeaderID: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
     },
     // invoiceHeaderID: {
     //   type: mongoose.Schema.Types.ObjectId,
