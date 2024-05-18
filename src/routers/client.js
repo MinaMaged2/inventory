@@ -13,7 +13,7 @@ router.post("/addClient", async (req, res) => {
   const amountDebit = req.body.amountDebit;
 
   try {
-    if (!name || !phone || !address || !amountDebit) {
+    if (!name || !phone || !address) {
       throw new Error("miss_data");
     }
 

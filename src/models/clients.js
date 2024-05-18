@@ -18,7 +18,6 @@ const clientSchema = new mongoose.Schema({
   },
   amountDebit: {
     type: Number,
-    required: true,
   },
   clientID: {
     type: Number,
