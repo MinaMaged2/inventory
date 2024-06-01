@@ -15,12 +15,12 @@ router.post("/addPurchaseHeader", async (req, res) => {
   const products = req.body.products;
   const isPayment = req.body.isPayment;
   const operationDate = req.body.operationDate;
-  
+
   try {
     if (!invoiceTotalWithTax || !supplierID) {
       throw new Error("miss_data");
     }
-    console.log('purchase: ', products)
+    console.log("purchase: ", products);
     let newProducts = [];
     // {name, cost, price, quantity}
 
@@ -35,19 +35,21 @@ router.post("/addPurchaseHeader", async (req, res) => {
             storeID: storeID,
           });
 
-          if (productPerStore) {
-            // productPerStore.quantity += product.Quantity;
-            productInStore.cost = product.Cost;
-            productInStore.price = product.Price;
-            productInStore.code = product.Code;
-          } else {
+          if (!productPerStore) {
             productPerStore = new ProductPerStore({
               quantity: 0,
               storeID: storeID,
               productID: productInStore._id,
             });
           }
-          newProducts.push({...productInStore._doc, quantity: product.Quantity });
+
+          productInStore.cost = product.Cost;
+          productInStore.price = product.Price;
+          productInStore.code = product.Code;
+          newProducts.push({
+            ...productInStore._doc,
+            quantity: product.Quantity,
+          });
           await productInStore.save();
           await productPerStore.save();
         } else {
@@ -58,7 +60,10 @@ router.post("/addPurchaseHeader", async (req, res) => {
             code: product.Code,
             online: false,
           });
-          newProducts.push({...productInStore._doc, quantity: product.Quantity });
+          newProducts.push({
+            ...productInStore._doc,
+            quantity: product.Quantity,
+          });
           await productInStore.save();
           let productPerStore = new ProductPerStore({
             quantity: 0,
@@ -80,9 +85,9 @@ router.post("/addPurchaseHeader", async (req, res) => {
       storeID,
       isPayment,
       amountPaidDebit: amountPaid,
-      operationDate
+      operationDate,
     });
-    console.log('products: ', newProducts)
+    console.log("products: ", newProducts);
     await purchaseHeader.save();
     res.status(200).send({ purchaseHeader, products: newProducts });
   } catch (e) {
@@ -103,17 +108,16 @@ router.get("/PurchaseHeaders", async (req, res) => {
   const storeID = req.query.storeID;
   try {
     if (purchaseType === "null") {
-      
-      if(storeID != 'null' && storeID && storeID != 'undefined'){
+      if (storeID != "null" && storeID && storeID != "undefined") {
         const purchaseHeaders = await PurchaseHeader.find({
           operationDate: { $gte: startFrom, $lte: endTo },
-          storeID
+          storeID,
         })
           .populate("supplierID")
           .populate("storeID")
           .sort({ operationDate: "desc" });
         res.status(200).send({ purchaseHeaders });
-      }else{
+      } else {
         const purchaseHeaders = await PurchaseHeader.find({
           operationDate: { $gte: startFrom, $lte: endTo },
         })
@@ -122,20 +126,18 @@ router.get("/PurchaseHeaders", async (req, res) => {
           .sort({ operationDate: "desc" });
         res.status(200).send({ purchaseHeaders });
       }
-      
     } else {
-      
-      if(storeID != 'null' && storeID && storeID != 'undefined'){
+      if (storeID != "null" && storeID && storeID != "undefined") {
         const purchaseHeaders = await PurchaseHeader.find({
           paidYN: purchaseType,
           operationDate: { $gte: startFrom, $lte: endTo },
-          storeID
+          storeID,
         })
           .populate("supplierID")
           .populate("storeID")
           .sort({ operationDate: "desc" });
         res.status(200).send({ purchaseHeaders });
-      }else{
+      } else {
         const purchaseHeaders = await PurchaseHeader.find({
           paidYN: purchaseType,
           operationDate: { $gte: startFrom, $lte: endTo },
@@ -145,7 +147,6 @@ router.get("/PurchaseHeaders", async (req, res) => {
           .sort({ operationDate: "desc" });
         res.status(200).send({ purchaseHeaders });
       }
-      
     }
   } catch (e) {
     console.log(e);

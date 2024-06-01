@@ -4,8 +4,9 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 const bankSchema = new mongoose.Schema({
   name: {
     type: String,
-    trim: true,
     required: true,
+    unique: true,
+    trim: true,
   },
   bankID: {
     type: Number,
