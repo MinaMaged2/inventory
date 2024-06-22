@@ -23,6 +23,9 @@ const settingRouter = require('./routers/settings');
 const bankInvoiceRouter = require('./routers/bankInvoice');
 const bankRouter = require('./routers/bank');
 const transferAccount = require('./routers/accountTransferHeader');
+const expenseType = require('./routers/expensesType');
+const employee = require('./routers/employee');
+const expenseHeader = require('./routers/expenseHeader');
 
 // connected port
 const port = process.env.PORT;
@@ -48,6 +51,10 @@ app.use(settingRouter);
 app.use(bankInvoiceRouter);
 app.use(bankRouter);
 app.use(transferAccount);
+app.use(expenseType);
+app.use(employee);
+app.use(expenseHeader);
+
 
 app.listen(port, ()=> {
   console.log("server is running " + port)
