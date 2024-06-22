@@ -45,6 +45,7 @@ router.get("/ExpenseHeaders", async (req, res) => {
   const expenseTypeName = req.query.expenseTypeName;
   const expenseTypeID = req.query.expenseTypeID;
 
+  console.log(expenseTypeName)
   try {
     // get
     if (expenseTypeName == "null") {
@@ -73,7 +74,7 @@ router.get("/ExpenseHeaders", async (req, res) => {
 
       if (expenseTypeName === "employee") {
         if (storeID != "null" && storeID && storeID != "undefined") {
-          if(employeeID != "null"){
+          if(expenseTypeID != "null"){
             expenseHeaders = await ExpenseHeader.find({
               operationDate: { $gte: startFrom, $lte: endTo },
               storeID,
@@ -96,7 +97,7 @@ router.get("/ExpenseHeaders", async (req, res) => {
           }
           
         } else {
-          if(employeeID != "null"){
+          if(expenseTypeID != "null"){
             expenseHeaders = await ExpenseHeader.find({
               operationDate: { $gte: startFrom, $lte: endTo },
               employeeID: expenseTypeID,
