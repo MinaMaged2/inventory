@@ -26,6 +26,7 @@ const transferAccount = require('./routers/accountTransferHeader');
 const expenseType = require('./routers/expensesType');
 const employee = require('./routers/employee');
 const expenseHeader = require('./routers/expenseHeader');
+const customerProducts = require('./routers/customerProducts');
 
 // connected port
 const port = process.env.PORT;
@@ -54,7 +55,7 @@ app.use(transferAccount);
 app.use(expenseType);
 app.use(employee);
 app.use(expenseHeader);
-
+app.use(customerProducts);
 
 app.listen(port, ()=> {
   console.log("server is running " + port)

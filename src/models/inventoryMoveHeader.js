@@ -11,7 +11,6 @@ const inventoryMoveHeaderSchema = new mongoose.Schema({
   storeID:{ 
     type: mongoose.Schema.Types.ObjectId,
     ref: "Store",
-    required: true,
   },
   description: {
     type: String,

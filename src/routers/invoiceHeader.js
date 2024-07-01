@@ -142,6 +142,27 @@ router.get("/InvoiceHeaders/:id", async (req, res) => {
   }
 });
 
+// get all sale invoices for customer
+router.get("/SaleInvoiceHeaders/:id", async (req, res) => {
+  const clientID = req.params.id;
+  const startFrom = req.query.startFrom;
+  const endTo = req.query.endTo;
+  try {
+    const invoiceHeaders = await InvoiceHeader.find({
+      clientID: clientID,
+      isPayment: false,
+      isReturn:false,
+      operationDate: { $gte: startFrom, $lte: endTo },
+    })
+      .populate("clientID")
+      .populate("storeID");
+    res.status(200).send({ invoiceHeaders });
+  } catch (e) {
+    console.log(e);
+    res.status(400).send({ message: "an error has occurred" });
+  }
+});
+
 // get all debit Invoices for customer
 router.get("/debitInvoiceHeaders/:id", async (req, res) => {
   const clientID = req.params.id;
@@ -218,52 +239,34 @@ router.put("/invoice/:id", async (req, res) => {
 });
 
 // edit invoice for return
-router.put("/returnInvoice/:id", async (req, res) => {
-  const invoiceID = req.params.id;
+router.put("/returnInvoice/", async (req, res) => {
 
   console.log(req.body);
   const products = req.body.products;
 
-  const updates = Object.keys(req.body.invoiceUpdates);
-  const allowedUpdates = [
-    // "invoiceTotalWithTax",
-    // "invoiceTotalNoTax",
-    // "amountPaid",
-    "amountPaidDebit",
-    "profit",
-  ];
-  const isValidUpdates = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
-
   try {
-    if (!isValidUpdates) {
-      throw new Error("invalid_updates");
-    }
 
-    const invoice = await InvoiceHeader.findById(invoiceID);
+    for(let product of products){
+      console.log(product)
+      let invoice = await InvoiceHeader.findById(product.invoiceID);
+      if (!invoice) {
+        throw new Error("no_invoice");
+      }
+      invoice.amountPaidDebit += product.totalReturn;
+      invoice.profit -= product.profit;
 
-    if (!invoice) {
-      throw new Error("no_invoice");
-    }
-
-    updates.forEach((update) => {
-      invoice[update] = req.body.invoiceUpdates[update];
-    });
-
-    for (let product of products) {
       let stockMovement = await StockMovement.findById(product.stockMovementID);
       stockMovement.amountOfReturn = product.returnAmount;
+      
+      await invoice.save();
       await stockMovement.save();
     }
-
-    await invoice.save();
-
-    res.status(200).send({ invoice });
+  
+    res.status(200).send({ message: "invoice and stock updated" });
   } catch (e) {
     console.log(e);
     if (e.message === "no_invoice") {
-      res.status(400).send({ message: "no client with this ID" });
+      res.status(400).send({ message: "no invoice with this ID" });
     } else if (e.message === "invalid_updates") {
       return res.status(400).send({ message: "Invalid updates" });
     } else {

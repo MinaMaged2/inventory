@@ -18,7 +18,7 @@ router.post("/addInventoryMoveHeader", async (req, res) => {
     if (
       !type ||
       !description ||
-      !storeID ||
+      // !storeID ||
       // !invoiceRefHeaderID ||
       !products
     ) {
@@ -36,7 +36,9 @@ router.post("/addInventoryMoveHeader", async (req, res) => {
     await inventoryMoveHeader.save();
     for(let product of products){
       
-      let productPerStoreData = await ProductPerStore.findOne({'productID': product._id, 'storeID': storeID});
+      let productPerStoreData = await ProductPerStore.findOne({'productID': product._id, 'storeID': product.storeID});
+      console.log('prod: ',productPerStoreData)
+
       let stockMovement = new StockMovement({
         'change': product.change,
         'type': product.type,
