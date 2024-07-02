@@ -3,6 +3,7 @@ const router = new express.Router();
 const PurchaseHeader = require("../models/purchaseHeader");
 const Product = require("../models/products");
 const ProductPerStore = require("../models/productPerStore");
+const StockMovement = require("../models/stockMovement");
 
 router.post("/addPurchaseHeader", async (req, res) => {
   const type = req.body.type;
@@ -219,6 +220,65 @@ router.put("/purchase/:id", async (req, res) => {
   } catch (e) {
     if (e.message === "no_invoice") {
       res.status(400).send({ message: "no client with this ID" });
+    } else if (e.message === "invalid_updates") {
+      return res.status(400).send({ message: "Invalid updates" });
+    } else {
+      res.status(400).send({ message: "an error has occurred" });
+    }
+  }
+});
+
+
+// get all sale invoices for supplier
+router.get("/PurchaseInvoiceHeaders/:id", async (req, res) => {
+  const supplierID = req.params.id;
+  const startFrom = req.query.startFrom;
+  const endTo = req.query.endTo;
+  try {
+    const invoiceHeaders = await PurchaseHeader.find({
+      supplierID: supplierID,
+      // isReturn: false,
+      isPayment: false,
+      operationDate: { $gte: startFrom, $lte: endTo },
+    })
+      .populate("supplierID")
+      .populate("storeID");
+    res.status(200).send({ invoiceHeaders });
+  } catch (e) {
+    console.log(e);
+    res.status(400).send({ message: "an error has occurred" });
+  }
+});
+
+// edit invoice for return
+router.put("/returnPurchase/", async (req, res) => {
+
+  console.log(req.body);
+  const products = req.body.products;
+
+  try {
+
+    for(let product of products){
+      console.log(product)
+      let invoice = await PurchaseHeader.findById(product.invoiceID);
+      if (!invoice) {
+        throw new Error("no_invoice");
+      }
+      invoice.amountPaidDebit += product.totalReturn;
+      // invoice.profit -= product.profit;
+
+      let stockMovement = await StockMovement.findById(product.stockMovementID);
+      stockMovement.amountOfReturn = product.returnAmount;
+      
+      await invoice.save();
+      await stockMovement.save();
+    }
+  
+    res.status(200).send({ message: "invoice and stock updated" });
+  } catch (e) {
+    console.log(e);
+    if (e.message === "no_invoice") {
+      res.status(400).send({ message: "no invoice with this ID" });
     } else if (e.message === "invalid_updates") {
       return res.status(400).send({ message: "Invalid updates" });
     } else {

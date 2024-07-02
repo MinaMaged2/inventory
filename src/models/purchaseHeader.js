@@ -38,6 +38,9 @@ const purchaseHeaderSchema = new mongoose.Schema({
   isPayment: {
     type: Boolean,
   },
+  isReturn:{
+    type: Boolean,
+  },
   purchaseHeaderID: {
     type: Number,
     unique: true
