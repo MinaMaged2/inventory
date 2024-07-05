@@ -155,7 +155,8 @@ router.get("/SaleInvoiceHeaders/:id", async (req, res) => {
       operationDate: { $gte: startFrom, $lte: endTo },
     })
       .populate("clientID")
-      .populate("storeID");
+      .populate("storeID")
+      .sort({ operationDate: -1 });
     res.status(200).send({ invoiceHeaders });
   } catch (e) {
     console.log(e);
@@ -256,7 +257,7 @@ router.put("/returnInvoice/", async (req, res) => {
       invoice.profit -= product.profit;
 
       let stockMovement = await StockMovement.findById(product.stockMovementID);
-      stockMovement.amountOfReturn = product.returnAmount;
+      stockMovement.amountOfReturn += product.returnAmount;
       
       await invoice.save();
       await stockMovement.save();

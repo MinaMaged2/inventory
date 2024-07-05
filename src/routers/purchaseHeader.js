@@ -15,7 +15,10 @@ router.post("/addPurchaseHeader", async (req, res) => {
   const supplierID = req.body.supplierID;
   const products = req.body.products;
   const isPayment = req.body.isPayment;
+  const isReturn = req.body.isReturn
   const operationDate = req.body.operationDate;
+  const oldRemaining = req.body.oldRemaining;
+  const descText = req.body.descText;
 
   try {
     if (!invoiceTotalWithTax || !supplierID) {
@@ -82,9 +85,12 @@ router.post("/addPurchaseHeader", async (req, res) => {
       invoiceTotalWithTax,
       amountPaid,
       paidYN,
+      descText,
       supplierID,
       storeID,
       isPayment,
+      isReturn,
+      oldRemaining,
       amountPaidDebit: amountPaid,
       operationDate,
     });
@@ -119,8 +125,9 @@ router.get("/PurchaseHeaders", async (req, res) => {
           .sort({ operationDate: "desc" });
         res.status(200).send({ purchaseHeaders });
       } else {
+        console.log(startFrom, endTo)
         const purchaseHeaders = await PurchaseHeader.find({
-          operationDate: { $gte: startFrom, $lte: endTo },
+          operationDate: { $gte: startFrom, $lte: endTo }
         })
           .populate("supplierID")
           .populate("storeID")
@@ -237,12 +244,13 @@ router.get("/PurchaseInvoiceHeaders/:id", async (req, res) => {
   try {
     const invoiceHeaders = await PurchaseHeader.find({
       supplierID: supplierID,
-      // isReturn: false,
+      isReturn: false,
       isPayment: false,
       operationDate: { $gte: startFrom, $lte: endTo },
     })
       .populate("supplierID")
-      .populate("storeID");
+      .populate("storeID")
+      .sort({ operationDate: -1 });
     res.status(200).send({ invoiceHeaders });
   } catch (e) {
     console.log(e);
@@ -268,7 +276,7 @@ router.put("/returnPurchase/", async (req, res) => {
       // invoice.profit -= product.profit;
 
       let stockMovement = await StockMovement.findById(product.stockMovementID);
-      stockMovement.amountOfReturn = product.returnAmount;
+      stockMovement.amountOfReturn += product.returnAmount;
       
       await invoice.save();
       await stockMovement.save();

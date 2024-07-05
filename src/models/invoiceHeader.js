@@ -13,8 +13,7 @@ const invoiceHeaderSchema = new mongoose.Schema(
       trim: true,
     },
     descText: {
-      type: String,
-      trim: true,
+      type: Number
     },
     invoiceTotalWithTax: {
       type: Number,
