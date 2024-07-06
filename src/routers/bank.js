@@ -36,7 +36,7 @@ router.post("/addBank", async (req, res) => {
       await mainChartAccount.save();
       const chartAccount = new ChartAccount({
         accountName,
-        accountRefId: supplier._id,
+        accountRefId: bank._id,
         balance: 0,
         amountDebit: 0,
         amountCredit: 0,
