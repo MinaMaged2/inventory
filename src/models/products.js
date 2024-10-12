@@ -20,6 +20,10 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
+  alertLimit: {
+    type: Number,
+    default: 5
+  },
   // amount: {
   //   type: Number,
   //   required: true,

@@ -19,6 +19,12 @@ const clientSchema = new mongoose.Schema({
   amountDebit: {
     type: Number,
   },
+  // سبت 0 - حد 1 - اتنين 2 - تلات 3 - اربع 4 - خميس 5 - جمعة 6
+  clientDays: [
+    {
+      type: Number,
+    }
+  ],
   clientID: {
     type: Number,
     unique: true

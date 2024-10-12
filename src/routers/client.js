@@ -11,13 +11,13 @@ router.post("/addClient", async (req, res) => {
   const phone = req.body.phone;
   const address = req.body.address;
   const amountDebit = req.body.amountDebit;
-
+  const clientDays = req.body.clientDays
   try {
     if (!name || !phone || !address) {
       throw new Error("miss_data");
     }
 
-    const client = new Client({ name, phone, address, amountDebit });
+    const client = new Client({ name, phone, address, amountDebit, clientDays });
     await client.save();
     let mainChartAccount = await MainChartAccount.findOne({
       accountName: "Customers",
@@ -141,7 +141,7 @@ router.put("/client/:id", async (req, res) => {
   const clientID = req.params.id;
 
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "phone", "address", "amountDebit"];
+  const allowedUpdates = ["name", "phone", "address", "amountDebit", "clientDays"];
   const isValidUpdates = updates.every((update) =>
     allowedUpdates.includes(update)
   );

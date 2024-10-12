@@ -79,7 +79,7 @@ router.put("/product/:id", async (req, res) => {
   const productID = req.params.id;
 
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "cost", "price", "online", "code"];
+  const allowedUpdates = ["name", "cost", "price", "online", "code", "alertLimit"];
   const isValidUpdates = updates.every((update) =>
     allowedUpdates.includes(update)
   );

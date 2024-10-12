@@ -1,6 +1,7 @@
 const express = require("express");
 const router = new express.Router();
 const ProductPerStore = require("../models/productPerStore");
+const { ObjectId } = require('mongodb');
 
 router.post("/addProductPerStore", async (req, res) => {
   const quantity = req.body.quantity;
@@ -34,7 +35,7 @@ router.post("/addProductPerStore", async (req, res) => {
 router.get("/productPerStore/:storeId", async (req, res) => {
   const storeID = req.params.storeId;
   const finished = req.query.finished;
-  console.log(finished, 'sf');
+  console.log(finished, "sf");
   try {
     if (storeID === "0") {
       let products;
@@ -42,13 +43,13 @@ router.get("/productPerStore/:storeId", async (req, res) => {
         products = await ProductPerStore.find({
           quantity: { $gte: 1 },
         })
-          .populate({path: 'productID', options: { sort: { 'CreatedAt': 1 } }})
+          .populate({ path: "productID", options: { sort: { CreatedAt: 1 } } })
           .populate("storeID");
         res.status(200).send({ products });
         return;
       }
       products = await ProductPerStore.find({})
-        .populate({path: 'productID',options: {sort: {name: -1}}})
+        .populate({ path: "productID", options: { sort: { name: -1 } } })
         .populate("storeID");
       res.status(200).send({ products });
     } else {
@@ -57,14 +58,15 @@ router.get("/productPerStore/:storeId", async (req, res) => {
         products = await ProductPerStore.find({
           quantity: { $gte: 1 },
           storeID: storeID,
-        })
-          .populate({path: 'productID',options: {sort: {name: -1}}});
+        }).populate({ path: "productID", options: { sort: { name: -1 } } });
         res.status(200).send({ products });
         return;
       }
 
-      products = await ProductPerStore.find({ storeID })
-        .populate({path: 'productID', options: {sort: {name: -1}}});
+      products = await ProductPerStore.find({ storeID }).populate({
+        path: "productID",
+        options: { sort: { name: -1 } },
+      });
       res.status(200).send({ products });
     }
   } catch (e) {
@@ -82,32 +84,116 @@ router.get("/nearToFinish/:storeId", async (req, res) => {
     if (storeID === "0") {
       let products;
       if (finished == "false") {
-        products = await ProductPerStore.find({
-          quantity: { $lte: 5},
-        })
-          .populate('productID')
-          .populate("storeID");
+        // products = await ProductPerStore.find({
+        //   quantity: { $lte: 5},
+        // })
+        //   .populate("productID")
+        //   .populate("storeID");
+
+        products = await ProductPerStore.aggregate([
+          {
+            $lookup: {
+              from: "products",
+              localField: "productID",
+              foreignField: "_id",
+              as: "productInfo",
+            },
+          },
+          {
+            $unwind: "$productInfo", // Unwind the product array
+          },
+          {
+            $match: {
+              $expr: {
+                $lt: ["$quantity", "$productInfo.alertLimit"],
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "stores",
+              localField: "storeID",
+              foreignField: "_id",
+              as: "storeInfo",
+            },
+          },
+          {
+            $unwind: "$storeInfo", // Unwind the store array
+          },
+          {
+            $project: {
+              quantity: 1,
+              productID: "$productInfo",
+              storeID: "$storeInfo",
+              productPerStoreID: 1,
+            },
+          },
+        ]);
         res.status(200).send({ products });
         return;
       }
       products = await ProductPerStore.find({})
-        .populate('productID')
+        .populate("productID")
         .populate("storeID");
       res.status(200).send({ products });
     } else {
       let products;
       if (finished == "false") {
-        products = await ProductPerStore.find({
-          quantity: { $lte: 5},
-          storeID: storeID,
-        })
-          .populate('productID');
+        // products = await ProductPerStore.find({
+        //   quantity: { $lte: 5 },
+        //   storeID: storeID,
+        // }).populate("productID");
+        products = await ProductPerStore.aggregate([
+          {
+            $lookup: {
+              from: "products",
+              localField: "productID",
+              foreignField: "_id",
+              as: "productInfo",
+            },
+          },
+          {
+            $unwind: "$productInfo", // Unwind the product array
+          },
+          {
+            $match: {
+              $expr: {
+                $lt: ["$quantity", "$productInfo.alertLimit"],
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "stores",
+              localField: "storeID",
+              foreignField: "_id",
+              as: "storeInfo",
+            },
+          },
+          {
+            $unwind: "$storeInfo", // Unwind the store array
+          },
+          {
+            $match: {
+              $expr: {
+                $eq: ["$storeInfo._id", new ObjectId(storeID)],
+              },
+            },
+          },
+          {
+            $project: {
+              quantity: 1,
+              productID: "$productInfo",
+              storeID: "$storeInfo",
+              productPerStoreID: 1,
+            },
+          },
+        ]);
         res.status(200).send({ products });
         return;
       }
 
-      products = await ProductPerStore.find({ storeID })
-        .populate('productID');
+      products = await ProductPerStore.find({ storeID }).populate("productID");
       res.status(200).send({ products });
     }
   } catch (e) {
@@ -116,18 +202,16 @@ router.get("/nearToFinish/:storeId", async (req, res) => {
   }
 });
 
-// get products per store values 
+// get products per store values
 router.post("/productsPerStore/:storeID", async (req, res) => {
   const storeID = req.params.storeID;
   const productsIDs = req.body.products;
 
   try {
-
-    
     const productsPerStore = await ProductPerStore.find({
       storeID,
-      'productID': {
-        $in: productsIDs
+      productID: {
+        $in: productsIDs,
       },
     });
 
