@@ -34,6 +34,7 @@ router.post("/addPurchaseHeader", async (req, res) => {
           name: product.Name.trim(),
         });
         if (productInStore) {
+          
           let productPerStore = await ProductPerStore.findOne({
             productID: productInStore._id,
             storeID: storeID,
@@ -47,7 +48,12 @@ router.post("/addPurchaseHeader", async (req, res) => {
             });
           }
 
-          productInStore.cost = product.Cost;
+          if(productPerStore.quantity > 0){
+            productInStore.cost = (product.Cost + productInStore.cost) / 2;
+          }else{
+            productInStore.cost = product.Cost;
+          }
+          // productInStore.price = (product.Price + productInStore.price) / 2;
           productInStore.price = product.Price;
           productInStore.code = product.Code;
           newProducts.push({
