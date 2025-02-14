@@ -49,9 +49,11 @@ router.post("/addPurchaseHeader", async (req, res) => {
           }
 
           if(productPerStore.quantity > 0){
-            productInStore.cost = (product.Cost + productInStore.cost) / 2;
+            productInStore.cost = product.Cost;
+            productInStore.mediumCost = (product.Cost + productInStore.mediumCost) / 2
           }else{
             productInStore.cost = product.Cost;
+            productInStore.mediumCost = product.Cost;
           }
           // productInStore.price = (product.Price + productInStore.price) / 2;
           productInStore.price = product.Price;
@@ -66,6 +68,7 @@ router.post("/addPurchaseHeader", async (req, res) => {
           let productInStore = new Product({
             name: product.Name,
             cost: product.Cost,
+            mediumCost: product.Cost,
             price: product.Price,
             code: product.Code,
             online: false,
