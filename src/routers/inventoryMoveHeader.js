@@ -108,6 +108,7 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
           if(productPerStore){
             productPerStore.quantity = product.Quantity;
             productInStore.cost = product.Cost;
+            productInStore.mediumCost = product.Cost;
             productInStore.price = product.Price;
             productInStore.code = product.Code;
           }else{
@@ -126,6 +127,7 @@ router.post("/firstInventoryMoveHeader", async (req, res) => {
           let productInStore = new Product({
             name: product.Name,
             cost: product.Cost,
+            mediumCost: product.Cost,
             price: product.Price,
             code : product.Code,
             online: false

@@ -3,7 +3,7 @@ const router = new express.Router();
 const User = require("../models/users");
 const auth = require("../middleware/auth");
 
-router.post("/createUser", async (req, res) => {
+router.post("/Auth/CreateUser", async (req, res) => {
   const name = req.body.name;
   const password = req.body.password;
   const type = req.body.type;
@@ -28,7 +28,7 @@ router.post("/createUser", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/Auth/Login", async (req, res) => {
   const name = req.body.name;
   const password = req.body.password;
 
@@ -50,7 +50,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.put("/updateUser", auth, async (req, res) => {
+router.put("/Auth/UpdateUser", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["name", "password", "type"];
   const isValidUpdates = updates.every((update) =>
@@ -76,7 +76,7 @@ router.put("/updateUser", auth, async (req, res) => {
   }
 });
 
-router.put("/editUser/:id", auth, async (req, res) => {
+router.put("/Auth/EditUser/:id", auth, async (req, res) => {
   const userID = req.params.id
   const updates = Object.keys(req.body);
   const allowedUpdates = ["name", "password", "type"];
@@ -105,7 +105,7 @@ router.put("/editUser/:id", auth, async (req, res) => {
   }
 });
 
-router.post("/logout", auth ,async (req, res) => {
+router.post("/Auth/Logout", auth ,async (req, res) => {
   try {
     req.user.token = null;
     await req.user.save();
@@ -117,7 +117,7 @@ router.post("/logout", auth ,async (req, res) => {
 });
 
 // get all users
-router.get("/users",  async (req, res) => {
+router.get("/Auth/Users",  async (req, res) => {
   try {
     const users = await User.find({ type: { $ne: "admin" } }).sort({ name: 1 });
     res.status(200).send({ users });
@@ -127,7 +127,7 @@ router.get("/users",  async (req, res) => {
 });
 
 // delete supplier
-router.delete("/user/:id", async (req, res) => {
+router.delete("/Auth/User/:id", async (req, res) => {
   const userID = req.params.id;
 
   try {

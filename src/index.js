@@ -27,6 +27,7 @@ const expenseType = require('./routers/expensesType');
 const employee = require('./routers/employee');
 const expenseHeader = require('./routers/expenseHeader');
 const customerProducts = require('./routers/customerProducts');
+const supplierProducts = require('./routers/supplierProduct');
 
 // connected port
 const port = process.env.PORT;
@@ -56,6 +57,7 @@ app.use(expenseType);
 app.use(employee);
 app.use(expenseHeader);
 app.use(customerProducts);
+app.use(supplierProducts);
 
 app.listen(port, ()=> {
   console.log("server is running " + port)
