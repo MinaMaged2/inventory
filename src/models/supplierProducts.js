@@ -1,35 +1,36 @@
 const mongoose = require("mongoose");
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
-const supplierProductSchema = new mongoose.Schema({
-  
+const supplierProductSchema = new mongoose.Schema(
+  {
     supplierID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Supplier",
-    required: true
-  },
-  products: [
-    {
-      productID:  {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Supplier",
+      required: true,
+    },
+    productID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
-      },
+      required: true,
+    },
+    lastPrice: {
+      type: Number,
+      required: true,
 
-      lastPrice: {
-        type: Number,
-      }
-    }
-  ],
-  supplierProductID: {
-    type: Number,
-    unique: true
+    },
+    supplierProductID: {
+      type: Number,
+      unique: true,
+    },
+  },
+  {
+    timestamps: true,
   }
+);
 
-},
-{
-  timestamps: true,
-});
-
-supplierProductSchema.plugin(AutoIncrement,  {inc_field: 'supplierProductID'} );
-const SupplierProduct = mongoose.model("SupplierProduct", supplierProductSchema);
+supplierProductSchema.plugin(AutoIncrement, { inc_field: "supplierProductID" });
+const SupplierProduct = mongoose.model(
+  "SupplierProduct",
+  supplierProductSchema
+);
 module.exports = SupplierProduct;
