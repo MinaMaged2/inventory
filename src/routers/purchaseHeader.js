@@ -19,6 +19,7 @@ router.post("/addPurchaseHeader", async (req, res) => {
   const operationDate = req.body.operationDate;
   const oldRemaining = req.body.oldRemaining;
   const descText = req.body.descText;
+  const extraInfo = req.body.extraInfo;
 
   try {
     if (!invoiceTotalWithTax || !supplierID) {
@@ -102,6 +103,7 @@ router.post("/addPurchaseHeader", async (req, res) => {
       oldRemaining,
       amountPaidDebit: amountPaid,
       operationDate,
+      extraInfo
     });
     console.log("products: ", newProducts);
     await purchaseHeader.save();

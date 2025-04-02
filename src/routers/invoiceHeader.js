@@ -18,6 +18,7 @@ router.post("/addInvoiceHeader", async (req, res) => {
   const isReturn = req.body.isReturn;
   const oldRemaining = req.body.oldRemaining;
   const descText = req.body.descText;
+  const extraInfo = req.body.extraInfo;
   const operationDate = req.body.operationDate;
 
   try {
@@ -41,6 +42,7 @@ router.post("/addInvoiceHeader", async (req, res) => {
       amountPaidDebit: amountPaid,
       isReturn: isReturn ? isReturn : false,
       oldRemaining,
+      extraInfo,
       operationDate
     });
 

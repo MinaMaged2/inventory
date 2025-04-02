@@ -52,6 +52,10 @@ const purchaseHeaderSchema = new mongoose.Schema(
       type: Number,
       unique: true,
     },
+    extraInfo: {
+      type: String,
+      trim: true,
+    },
     operationDate: {
       type: Date,
     },
