@@ -41,7 +41,7 @@ router.get("/productPerStore/:storeId", async (req, res) => {
       let products;
       if (finished == "false") {
         products = await ProductPerStore.find({
-          quantity: { $gte: 1 },
+          quantity: { $gte: 0.01 },
         })
           .populate({ path: "productID", options: { sort: { CreatedAt: 1 } } })
           .populate("storeID");
@@ -56,7 +56,7 @@ router.get("/productPerStore/:storeId", async (req, res) => {
       let products;
       if (finished == "false") {
         products = await ProductPerStore.find({
-          quantity: { $gte: 1 },
+          quantity: { $gte: 0.01 },
           storeID: storeID,
         }).populate({ path: "productID", options: { sort: { name: -1 } } });
         res.status(200).send({ products });

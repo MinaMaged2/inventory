@@ -56,6 +56,9 @@ const purchaseHeaderSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    discPercentageForProducts: {
+      type: Number,
+    },
     operationDate: {
       type: Date,
     },
