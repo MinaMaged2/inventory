@@ -20,7 +20,7 @@ router.post("/addPurchaseHeader", async (req, res) => {
   const oldRemaining = req.body.oldRemaining;
   const descText = req.body.descText;
   const extraInfo = req.body.extraInfo;
-
+  const discPercentageForProducts = req.body.discPercentageForProducts
   try {
     if (!invoiceTotalWithTax || !supplierID) {
       throw new Error("miss_data");
@@ -103,7 +103,8 @@ router.post("/addPurchaseHeader", async (req, res) => {
       oldRemaining,
       amountPaidDebit: amountPaid,
       operationDate,
-      extraInfo
+      extraInfo,
+      discPercentageForProducts
     });
     console.log("products: ", newProducts);
     await purchaseHeader.save();
